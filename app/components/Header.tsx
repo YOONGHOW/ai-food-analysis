@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Menu, LogOut, User as UserIcon } from "lucide-react";
 import { useSettings } from "../context/SettingsContext";
 import { useAuth } from "../context/AuthContext";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
   const { setIsSidebarOpen } = useSettings();
@@ -33,8 +34,10 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* Right Side - Auth */}
-        <div className="flex items-center gap-4">
+        {/* Right Side - Auth & Theme */}
+        <div className="flex items-center gap-2 sm:gap-4">
+          <ThemeToggle />
+
           {user ? (
             <div className="flex items-center gap-3 animate-in fade-in duration-300">
               <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/60 text-xs font-semibold text-slate-650 dark:text-slate-350">

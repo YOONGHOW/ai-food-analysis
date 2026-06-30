@@ -39,6 +39,36 @@ async function searchWeb(query: string): Promise<string[]> {
   }
 }
 
+// Helper to safely clean and parse JSON response from Gemini, handling trailing commas and formatting quirks
+function cleanAndParseJSON(text: string) {
+  let cleanText = text.trim();
+  // Strip markdown code blocks if the LLM returned them
+  if (cleanText.startsWith("```json")) {
+    cleanText = cleanText.substring(7);
+  } else if (cleanText.startsWith("```")) {
+    cleanText = cleanText.substring(3);
+  }
+  if (cleanText.endsWith("```")) {
+    cleanText = cleanText.substring(0, cleanText.length - 3);
+  }
+  cleanText = cleanText.trim();
+
+  try {
+    return JSON.parse(cleanText);
+  } catch (err) {
+    console.warn("[JSON Parse Warning] Strict parsing failed, attempting cleanup on:", cleanText);
+    // Remove trailing commas before array/object closing brackets
+    let repaired = cleanText.replace(/,\s*([\]}])/g, '$1');
+    // Ensure all keys are double-quoted
+    repaired = repaired.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?\s*:/g, '"$2":');
+    // Convert single quoted values to double quoted values safely
+    // (A very basic replacement for common single quotes issues)
+    repaired = repaired.replace(/:\s*'([^']*)'/g, ': "$1"');
+
+    return JSON.parse(repaired);
+  }
+}
+
 // Helper function to call Gemini and generate structured menu
 async function generateMenu(placeId: string, name: string, vicinity: string, reviews: any[]) {
   if (!genAI) return null;
@@ -81,7 +111,7 @@ async function generateMenu(placeId: string, name: string, vicinity: string, rev
 
     const geminiResult = await model.generateContent(prompt);
     const text = geminiResult.response.text();
-    const menuHighlights = JSON.parse(text);
+    const menuHighlights = cleanAndParseJSON(text);
 
     // Log token usage to database asynchronously
     const usage = geminiResult.response.usageMetadata;

@@ -17,18 +17,61 @@ interface Place {
   photoReference?: string;
 }
 
+const matchesPriceTier = (place: { name: string; priceLevel?: number }, tier: string): boolean => {
+  if (tier === "all") return true;
+  
+  if (place.priceLevel !== undefined && place.priceLevel !== null) {
+    if (tier === "1") return place.priceLevel <= 1;
+    if (tier === "2") return place.priceLevel === 2;
+    if (tier === "3") return place.priceLevel >= 3;
+  }
+  
+  const name = place.name.toLowerCase();
+  let guessedLevel = 1;
+  
+  if (
+    name.includes("fine dining") || 
+    name.includes("steakhouse") || 
+    name.includes("bistro") ||
+    name.includes("hotel") ||
+    name.includes("cuisine")
+  ) {
+    guessedLevel = 3;
+  } else if (
+    name.includes("cafe") || 
+    name.includes("restaurant") || 
+    name.includes("kitchen") || 
+    name.includes("bar") ||
+    name.includes("coffee") ||
+    name.includes("japanese") ||
+    name.includes("korean") ||
+    name.includes("brunch")
+  ) {
+    guessedLevel = 2;
+  }
+  
+  if (tier === "1") return guessedLevel === 1;
+  if (tier === "2") return guessedLevel === 2;
+  if (tier === "3") return guessedLevel === 3;
+  
+  return true;
+};
+
 export default function RestaurantsPage() {
-  const { state, place, radius } = useSettings();
+  const { state, place, radius, priceTier } = useSettings();
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
 
-  const fetchPlaces = async () => {
+  const filteredPlaces = places.filter(p => matchesPriceTier(p, priceTier));
+
+  const fetchPlaces = async (forceRefresh = false) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/places?state=${encodeURIComponent(state)}&place=${encodeURIComponent(place)}&radius=${radius}`);
+      const url = `/api/places?state=${encodeURIComponent(state)}&place=${encodeURIComponent(place)}&radius=${radius}${forceRefresh ? '&refresh=true' : ''}`;
+      const res = await fetch(url);
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setPlaces(data.places || []);
@@ -53,7 +96,7 @@ export default function RestaurantsPage() {
           </p>
         </div>
         <button 
-          onClick={fetchPlaces}
+          onClick={() => fetchPlaces(true)}
           disabled={loading}
           className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors text-sm font-medium disabled:opacity-50 cursor-pointer w-fit"
         >
@@ -70,18 +113,18 @@ export default function RestaurantsPage() {
       ) : error ? (
         <div className="flex flex-col items-center justify-center flex-1 py-16 text-center max-w-md mx-auto">
           <p className="text-red-500 mb-4">{error}</p>
-          <button onClick={fetchPlaces} className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-medium">
+          <button onClick={() => fetchPlaces()} className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-medium">
             Try Again
           </button>
         </div>
-      ) : places.length === 0 ? (
+      ) : filteredPlaces.length === 0 ? (
         <div className="flex flex-col items-center justify-center flex-1 py-16 text-center">
-          <p className="text-slate-500 mb-2">No restaurants found in this area.</p>
-          <p className="text-sm text-slate-400">Try increasing your search radius in the settings sidebar.</p>
+          <p className="text-slate-500 mb-2">No restaurants matching your budget tier found in this area.</p>
+          <p className="text-sm text-slate-400">Try changing your budget settings or increasing your search radius.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {places.map((place) => (
+          {filteredPlaces.map((place) => (
             <div 
               key={place.id}
               className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col"

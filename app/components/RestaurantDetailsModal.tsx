@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { X, Star, MapPin, Phone, Clock, Globe, Loader2, MessageSquare, Dices } from "lucide-react";
+import { useSettings } from "../context/SettingsContext";
 
 interface Review {
   author: string;
@@ -100,12 +101,30 @@ function getMenuHighlights(name: string): { name: string; desc: string; price: s
 }
 
 export default function RestaurantDetailsModal({ placeId, onClose }: RestaurantDetailsModalProps) {
+  const { priceTier } = useSettings();
   const [details, setDetails] = useState<PlaceDetails | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
   const isOpen = !!placeId;
+
+  const parsePrice = (priceStr: string): number => {
+    const cleaned = priceStr.replace(/[^\d.]/g, "");
+    const parsed = parseFloat(cleaned);
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
+  const getFilteredHighlights = (items: { name: string; desc: string; price: string }[]) => {
+    if (priceTier === "all") return items;
+    return items.filter(item => {
+      const price = parsePrice(item.price);
+      if (priceTier === "1") return price <= 10;
+      if (priceTier === "2") return price > 10 && price <= 20;
+      if (priceTier === "3") return price > 20;
+      return true;
+    });
+  };
 
   useEffect(() => {
     if (!placeId) return;
@@ -218,7 +237,7 @@ export default function RestaurantDetailsModal({ placeId, onClose }: RestaurantD
               )}
 
               {/* 2. Restaurant Info */}
-              <div className="space-y-3.5 text-sm text-slate-650 dark:text-slate-350">
+              <div className="space-y-3.5 text-sm text-slate-600 dark:text-slate-300">
                 <div className="flex items-start gap-3">
                   <MapPin className="text-orange-500 flex-shrink-0 mt-0.5" size={16} />
                   <span>{details.vicinity}</span>
@@ -271,23 +290,36 @@ export default function RestaurantDetailsModal({ placeId, onClose }: RestaurantD
                 </div>
                 
                 <div className="space-y-3">
-                  {(details.menuHighlights && details.menuHighlights.length > 0
-                    ? details.menuHighlights
-                    : getMenuHighlights(details.name)
-                  ).map((item, idx) => (
-                    <div 
-                      key={idx} 
-                      className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800/50 p-4 rounded-xl flex justify-between gap-4"
-                    >
-                      <div className="space-y-0.5">
-                        <h4 className="font-bold text-sm text-slate-800 dark:text-slate-250">{item.name}</h4>
-                        <p className="text-xs text-slate-450 dark:text-slate-400 leading-tight">{item.desc}</p>
+                  {(() => {
+                    const originalItems = details.menuHighlights && details.menuHighlights.length > 0
+                      ? details.menuHighlights
+                      : getMenuHighlights(details.name);
+                    const filteredItems = getFilteredHighlights(originalItems);
+
+                    if (filteredItems.length === 0) {
+                      const tierLabel = priceTier === "1" ? "under RM 10" : priceTier === "2" ? "RM 10 - RM 20" : "above RM 20";
+                      return (
+                        <p className="text-xs text-slate-500 italic py-4 text-center dark:text-slate-400">
+                          No menu items found in the select budget tier ({tierLabel}).
+                        </p>
+                      );
+                    }
+
+                    return filteredItems.map((item, idx) => (
+                      <div 
+                        key={idx} 
+                        className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800/50 p-4 rounded-xl flex justify-between gap-4"
+                      >
+                        <div className="space-y-0.5">
+                          <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200">{item.name}</h4>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 leading-tight">{item.desc}</p>
+                        </div>
+                        <div className="font-bold text-sm text-orange-500 whitespace-nowrap">
+                          {item.price}
+                        </div>
                       </div>
-                      <div className="font-bold text-sm text-orange-500 whitespace-nowrap">
-                        {item.price}
-                      </div>
-                    </div>
-                  ))}
+                    ));
+                  })()}
                 </div>
               </div>
 
@@ -326,7 +358,7 @@ export default function RestaurantDetailsModal({ placeId, onClose }: RestaurantD
                             </div>
                           </div>
                         </div>
-                        <p className="text-xs text-slate-600 dark:text-slate-450 leading-relaxed whitespace-pre-line line-clamp-3">
+                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line line-clamp-3">
                           {rev.text}
                         </p>
                       </div>

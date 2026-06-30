@@ -24,6 +24,11 @@ export async function GET(request: Request) {
   const place = searchParams.get('place') || 'George Town';
   const radius = searchParams.get('radius') || '10000'; // 10km radius
   const keyword = searchParams.get('keyword') || 'food';
+  const refresh = searchParams.get('refresh') === 'true';
+
+  if (!state || !place) {
+    return NextResponse.json({ error: 'Missing state or place parameter' }, { status: 400 });
+  }
 
   const apiKey = process.env.GOOGLE_PLACE_API_KEY;
 
@@ -31,8 +36,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Google Places API key is not configured' }, { status: 500 });
   }
 
-  // 1. Check DB Cache First (if Supabase is configured)
-  if (supabase) {
+  // 1. Check DB Cache First (if Supabase is configured and not forced refresh)
+  if (supabase && !refresh) {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 

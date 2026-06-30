@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X, Settings, Dices, MapPin, Navigation, Check } from "lucide-react";
+import { X, Settings, Dices, MapPin, Navigation, Check, Coins, Heart } from "lucide-react";
 import { useSettings } from "../context/SettingsContext";
 
 export const STATES = [
@@ -52,12 +52,14 @@ export default function Sidebar() {
     state, setState, 
     place, setPlace, 
     radius, setRadius,
+    priceTier, setPriceTier,
     isSidebarOpen, setIsSidebarOpen 
   } = useSettings();
 
   // Local temporary state for editing settings
   const [tempState, setTempState] = useState(state);
   const [tempPlace, setTempPlace] = useState(place);
+  const [tempPriceTier, setTempPriceTier] = useState(priceTier);
   const [showAppliedAlert, setShowAppliedAlert] = useState(false);
 
   // Sync temp state with global state when sidebar opens
@@ -65,8 +67,9 @@ export default function Sidebar() {
     if (isSidebarOpen) {
       setTempState(state);
       setTempPlace(place);
+      setTempPriceTier(priceTier);
     }
-  }, [isSidebarOpen, state, place]);
+  }, [isSidebarOpen, state, place, priceTier]);
 
   const closeSidebar = () => setIsOpen(false);
   const setIsOpen = (val: boolean) => setIsSidebarOpen(val);
@@ -81,6 +84,7 @@ export default function Sidebar() {
   const handleApplySettings = () => {
     setState(tempState);
     setPlace(tempPlace);
+    setPriceTier(tempPriceTier);
     setShowAppliedAlert(true);
     setTimeout(() => {
       setShowAppliedAlert(false);
@@ -181,6 +185,33 @@ export default function Sidebar() {
                 </div>
               </div>
 
+              {/* Budget Option */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2 flex items-center gap-1">
+                  <Coins size={12} /> Budget / Price Tier
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { label: "All", value: "all" },
+                    { label: "$", value: "1" },
+                    { label: "$$", value: "2" },
+                    { label: "$$$", value: "3" },
+                  ].map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setTempPriceTier(opt.value)}
+                      className={`py-2.5 text-xs rounded-xl border transition-colors cursor-pointer ${
+                        tempPriceTier === opt.value 
+                          ? "bg-orange-50 dark:bg-orange-500/10 border-orange-500 text-orange-600 dark:text-orange-400 font-bold" 
+                          : "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Apply Button */}
               <button
                 onClick={handleApplySettings}
@@ -222,17 +253,35 @@ export default function Sidebar() {
               <Dices size={18} className="text-rose-500" />
               <h3>Play</h3>
             </div>
-            <Link 
-              href="/roulette" 
-              onClick={closeSidebar}
-              className={`block p-3 rounded-xl transition-colors ${
-                pathname === '/roulette' 
-                ? 'bg-orange-50/50 dark:bg-orange-950/20 text-orange-600 dark:text-orange-400 font-semibold' 
-                : 'hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400'
-              }`}
-            >
-              Spin the Wheel
-            </Link>
+            <div className="flex flex-col gap-1">
+              <Link 
+                href="/roulette" 
+                onClick={closeSidebar}
+                className={`flex items-center gap-3 p-3 rounded-xl transition-colors ${
+                  pathname === '/roulette' 
+                  ? 'bg-orange-50/50 dark:bg-orange-950/20 text-orange-600 dark:text-orange-400 font-semibold' 
+                  : 'hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400'
+                }`}
+              >
+                <Dices size={16} className="flex-shrink-0" />
+                <span>Spin the Wheel</span>
+              </Link>
+              <Link 
+                href="/couples-swipe" 
+                onClick={closeSidebar}
+                className={`flex items-center gap-3 p-3 rounded-xl transition-colors ${
+                  pathname === '/couples-swipe' 
+                  ? 'bg-rose-50/50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 font-semibold' 
+                  : 'hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400'
+                }`}
+              >
+                <Heart size={16} className="flex-shrink-0" />
+                <div>
+                  <span className="block text-sm">Couples Swipe</span>
+                  <span className="block text-xs text-slate-400 font-normal">Food Tinder for two</span>
+                </div>
+              </Link>
+            </div>
           </section>
 
 
