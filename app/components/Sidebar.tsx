@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X, Settings, Dices, MapPin, Navigation, Check, Coins, Heart, Loader2, ChevronDown, Compass, LayoutDashboard } from "lucide-react";
+import { X, Settings, Dices, MapPin, Navigation, Check, Coins, Heart, Loader2, ChevronDown, Compass, LayoutDashboard, Sparkles } from "lucide-react";
 import { useSettings } from "../context/SettingsContext";
 
 export const STATES = [
@@ -521,7 +521,7 @@ export default function Sidebar() {
                   href="/couples-swipe"
                   onClick={closeSidebar}
                   className={`flex items-center gap-3 p-3 rounded-xl transition-colors ${pathname === '/couples-swipe'
-                    ? 'bg-rose-50/50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 font-semibold'
+                    ? 'bg-rose-50/50 dark:bg-rose-955/20 text-rose-600 dark:text-rose-400 font-semibold'
                     : 'hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400'
                     }`}
                 >
@@ -529,6 +529,20 @@ export default function Sidebar() {
                   <div>
                     <span className="block text-sm">Couples Swipe</span>
                     <span className="block text-xs text-slate-400 font-normal">Food Tinder for two</span>
+                  </div>
+                </Link>
+                <Link
+                  href="/ai-advisor"
+                  onClick={closeSidebar}
+                  className={`flex items-center gap-3 p-3 rounded-xl transition-colors ${pathname === '/ai-advisor'
+                    ? 'bg-indigo-50/50 dark:bg-indigo-950/20 text-indigo-600 dark:text-indigo-400 font-semibold'
+                    : 'hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400'
+                    }`}
+                >
+                  <Sparkles size={16} className="flex-shrink-0 text-indigo-500" />
+                  <div>
+                    <span className="block text-sm">AI Food Therapist</span>
+                    <span className="block text-xs text-slate-400 font-normal">Diagnostic Q&A advice</span>
                   </div>
                 </Link>
               </div>

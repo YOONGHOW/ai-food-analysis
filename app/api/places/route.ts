@@ -52,7 +52,8 @@ export async function GET(request: Request) {
         .eq('radius', Number(radius))
         .gt('created_at', sevenDaysAgo.toISOString());
 
-      if (!cacheError && cachedPlaces && cachedPlaces.length > 0) {
+      // Only use cache if we have a substantial list of restaurants (e.g. >= 10) to ensure a complete browse experience
+      if (!cacheError && cachedPlaces && cachedPlaces.length >= 10) {
         console.log(`[Cache HIT] Found ${cachedPlaces.length} places for "${place}, ${state}" in Supabase.`);
         const formattedPlaces = cachedPlaces.map(p => ({
           id: p.id,
@@ -119,7 +120,7 @@ export async function GET(request: Request) {
       photoReference: place.photos?.[0]?.photo_reference,
     }));
 
-    // 3. Save to DB Cache asynchronously (if Supabase is configured and we have places)
+    // 3. Save to DB Cache (if Supabase is configured and we have places)
     if (supabase && places.length > 0) {
       const dbRows = places.map((p: any) => ({
         id: p.id,
@@ -135,18 +136,21 @@ export async function GET(request: Request) {
         state: state,
         place_name: place,
         radius: Number(radius),
+        created_at: new Date().toISOString()
       }));
 
-      supabase
-        .from('places_cache')
-        .upsert(dbRows, { onConflict: 'id' })
-        .then(({ error: insertError }) => {
-          if (insertError) {
-            console.error("[Supabase Cache Write Error] Failed to write cache:", insertError.message);
-          } else {
-            console.log(`[Cache WRITE] Cached ${places.length} places for "${place}, ${state}" in Supabase.`);
-          }
-        });
+      try {
+        const { error: insertError } = await supabase
+          .from('places_cache')
+          .upsert(dbRows, { onConflict: 'id' });
+        if (insertError) {
+          console.error("[Supabase Cache Write Error] Failed to write cache:", insertError.message);
+        } else {
+          console.log(`[Cache WRITE] Cached ${places.length} places for "${place}, ${state}" in Supabase.`);
+        }
+      } catch (err) {
+        console.error("Supabase cache write exception:", err);
+      }
     }
 
     return NextResponse.json({ places });

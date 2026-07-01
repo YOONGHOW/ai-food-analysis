@@ -60,6 +60,24 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   // Load settings and favorites scoped to the logged-in user
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const id = user ? user.id : "guest";
+
+      // Load location settings from local storage database
+      const savedState = localStorage.getItem(`search_state_${id}`);
+      if (savedState) setState(savedState);
+
+      const savedPlace = localStorage.getItem(`search_place_${id}`);
+      if (savedPlace) setPlace(savedPlace);
+
+      const savedRadius = localStorage.getItem(`search_radius_${id}`);
+      if (savedRadius) setRadius(Number(savedRadius));
+
+      const savedPriceTier = localStorage.getItem(`search_price_tier_${id}`);
+      if (savedPriceTier) setPriceTier(savedPriceTier);
+
+      const savedUseLocation = localStorage.getItem(`search_use_location_${id}`);
+      if (savedUseLocation) setUseCurrentLocation(savedUseLocation === "true");
+
       if (user) {
         const saved = localStorage.getItem(`favorites_restaurants_${user.id}`);
         if (saved) {
@@ -93,6 +111,46 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       }
     }
   }, [user]);
+
+  const updateState = (val: string) => {
+    setState(val);
+    if (typeof window !== "undefined") {
+      const id = user ? user.id : "guest";
+      localStorage.setItem(`search_state_${id}`, val);
+    }
+  };
+
+  const updatePlace = (val: string) => {
+    setPlace(val);
+    if (typeof window !== "undefined") {
+      const id = user ? user.id : "guest";
+      localStorage.setItem(`search_place_${id}`, val);
+    }
+  };
+
+  const updateRadius = (val: number) => {
+    setRadius(val);
+    if (typeof window !== "undefined") {
+      const id = user ? user.id : "guest";
+      localStorage.setItem(`search_radius_${id}`, String(val));
+    }
+  };
+
+  const updatePriceTier = (val: string) => {
+    setPriceTier(val);
+    if (typeof window !== "undefined") {
+      const id = user ? user.id : "guest";
+      localStorage.setItem(`search_price_tier_${id}`, val);
+    }
+  };
+
+  const updateUseCurrentLocation = (val: boolean) => {
+    setUseCurrentLocation(val);
+    if (typeof window !== "undefined") {
+      const id = user ? user.id : "guest";
+      localStorage.setItem(`search_use_location_${id}`, String(val));
+    }
+  };
 
   const toggleFavorite = (placeObj: Place) => {
     if (!user) {
@@ -159,12 +217,12 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   return (
     <SettingsContext.Provider 
       value={{ 
-        state, setState, 
-        place, setPlace,
-        radius, setRadius,
-        priceTier, setPriceTier,
+        state, setState: updateState, 
+        place, setPlace: updatePlace,
+        radius, setRadius: updateRadius,
+        priceTier, setPriceTier: updatePriceTier,
         isSidebarOpen, setIsSidebarOpen,
-        useCurrentLocation, setUseCurrentLocation,
+        useCurrentLocation, setUseCurrentLocation: updateUseCurrentLocation,
         favorites, toggleFavorite, isFavorite,
         favoriteFoods, toggleFavoriteFood, isFavoriteFood,
         prefersSpicy, setPrefersSpicy

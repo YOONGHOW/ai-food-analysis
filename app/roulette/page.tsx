@@ -500,36 +500,6 @@ export default function RoulettePage() {
           </div>
         </div>
 
-        {/* Vibe Funnel Toggle */}
-        <div
-          onClick={() => {
-            setVibeFunnelEnabled(v => !v);
-            setVibeStep(0);
-            setVibeAnswers({ style: null, flavor: null, vibe: null });
-            setVibeFallbackActive(false);
-          }}
-          className={`w-full mb-6 p-3 rounded-2xl border-2 flex items-center justify-between cursor-pointer transition-all duration-300 ${vibeFunnelEnabled
-            ? "border-orange-500 bg-orange-50 dark:bg-orange-950/30"
-            : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300"
-            }`}
-        >
-          <div className="flex items-center gap-3">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${vibeFunnelEnabled ? "bg-orange-500 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-400"}`}>
-              <Zap size={18} />
-            </div>
-            <div>
-              <p className={`text-sm font-bold ${vibeFunnelEnabled ? "text-orange-600 dark:text-orange-400" : "text-slate-700 dark:text-slate-300"}`}>
-                Vibe Funnel Mode
-              </p>
-              <p className="text-xs text-slate-400">
-                Filter by mood (Style, Spice, Vibe) before spinning
-              </p>
-            </div>
-          </div>
-          <div className={`w-12 h-6 rounded-full transition-all duration-300 flex items-center px-1 ${vibeFunnelEnabled ? "bg-orange-500 justify-end" : "bg-slate-200 dark:bg-slate-700 justify-start"}`}>
-            <div className="w-4 h-4 bg-white rounded-full shadow" />
-          </div>
-        </div>
 
         {loading ? (
           <div className="flex flex-col items-center text-slate-400 py-12">

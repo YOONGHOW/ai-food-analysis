@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, MapPin, Star, Navigation, RefreshCw, BookOpen, Heart, Search, WifiOff } from "lucide-react";
+import { Loader2, MapPin, Star, Navigation, RefreshCw, BookOpen, Heart, Search, WifiOff, ChevronDown } from "lucide-react";
 import { useSettings } from "../context/SettingsContext";
 import RestaurantDetailsModal from "../components/RestaurantDetailsModal";
 import FoodDetailsModal from "../components/FoodDetailsModal";
@@ -82,6 +82,8 @@ export default function RestaurantsPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const [restaurantKeyword, setRestaurantKeyword] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 16;
 
   const [viewMode, setViewMode] = useState<"restaurant" | "food">("restaurant");
   const [foods, setFoods] = useState<FoodItem[]>([]);
@@ -92,7 +94,46 @@ export default function RestaurantsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [foodImageErrors, setFoodImageErrors] = useState<Record<string, boolean>>({});
 
-  const filteredPlaces = places.filter(p => matchesPriceTier(p, priceTier));
+  const [restaurantSearch, setRestaurantSearch] = useState("");
+  const [restaurantSort, setRestaurantSort] = useState<"default" | "rating" | "cheapest">("default");
+  const [isSortOpen, setIsSortOpen] = useState(false);
+
+  // Reset pagination page to 1 on filter/search modifications
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [restaurantSearch, restaurantSort, priceTier, state, place, radius, useCurrentLocation, restaurantKeyword]);
+
+  const filteredPlaces = places
+    .filter(p => matchesPriceTier(p, priceTier))
+    .filter(p => {
+      if (!restaurantSearch) return true;
+      const term = restaurantSearch.toLowerCase();
+      return p.name.toLowerCase().includes(term) || 
+             p.vicinity.toLowerCase().includes(term);
+    })
+    .sort((a, b) => {
+      if (restaurantSort === "rating") {
+        // Weighted rating calculation (Bayesian-style average)
+        // Helps prevent 5-star ratings with only 1 review from outranking highly-reviewed 4.8-star spots.
+        const getWeightedRating = (p: Place) => {
+          const rating = p.rating || 0;
+          const count = p.userRatingsTotal || 0;
+          const minReviewsThreshold = 5; // Weight threshold (m)
+          const defaultBaseline = 3.5;   // Default average baseline (C)
+          return (count * rating + minReviewsThreshold * defaultBaseline) / (count + minReviewsThreshold);
+        };
+        return getWeightedRating(b) - getWeightedRating(a);
+      }
+      if (restaurantSort === "cheapest") {
+        const priceA = a.priceLevel !== undefined ? a.priceLevel : 2;
+        const priceB = b.priceLevel !== undefined ? b.priceLevel : 2;
+        return priceA - priceB;
+      }
+      return 0;
+    });
+
+  const totalPages = Math.ceil(filteredPlaces.length / itemsPerPage);
+  const paginatedPlaces = filteredPlaces.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const filteredFoods = foods.filter(f => {
     const matchesSearch = f.name.toLowerCase().includes(foodSearch.toLowerCase()) || 
@@ -222,6 +263,74 @@ export default function RestaurantsPage() {
 
       {viewMode === "restaurant" && (
         <div className="flex-1 flex flex-col">
+          {/* Search and Sort controls */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+              <input
+                type="text"
+                placeholder="Search restaurants by name or area..."
+                value={restaurantSearch}
+                onChange={(e) => setRestaurantSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+            
+            <div className="relative flex items-center gap-2 z-20">
+              <span className="text-xs font-semibold text-slate-450 dark:text-slate-500 uppercase tracking-wider">Sort by:</span>
+              
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsSortOpen(!isSortOpen)}
+                  className="px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-semibold hover:border-orange-500 transition-colors flex items-center gap-2 shadow-sm cursor-pointer min-w-[150px] justify-between text-left"
+                >
+                  <span>
+                    {restaurantSort === "default" && "Default"}
+                    {restaurantSort === "rating" && "Top Rated"}
+                    {restaurantSort === "cheapest" && "Cheapest First"}
+                  </span>
+                  <ChevronDown size={14} className={`text-slate-400 transition-transform duration-200 ${isSortOpen ? "rotate-180" : ""}`} />
+                </button>
+
+                {isSortOpen && (
+                  <>
+                    {/* Click backdrop to dismiss */}
+                    <div 
+                      className="fixed inset-0 z-10" 
+                      onClick={() => setIsSortOpen(false)}
+                    />
+                    
+                    {/* Dropdown Options List */}
+                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-20 overflow-hidden py-1.5 animate-in fade-in slide-in-from-top-2 duration-200">
+                      {[
+                        { value: "default", label: "Default" },
+                        { value: "rating", label: "Top Rated" },
+                        { value: "cheapest", label: "Cheapest First" }
+                      ].map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => {
+                            setRestaurantSort(opt.value as any);
+                            setIsSortOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-2.5 text-sm transition-colors cursor-pointer block ${
+                            restaurantSort === opt.value
+                              ? "bg-orange-50 dark:bg-orange-950/20 text-orange-600 dark:text-orange-400 font-bold"
+                              : "hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
           {restaurantKeyword && (
             <div className="mb-6 flex items-center justify-between p-3.5 bg-orange-50 dark:bg-orange-950/20 border border-orange-200/60 dark:border-orange-900/50 rounded-2xl text-sm animate-in fade-in slide-in-from-top-1">
               <span className="text-orange-800 dark:text-orange-355">
@@ -250,12 +359,13 @@ export default function RestaurantsPage() {
             </div>
           ) : filteredPlaces.length === 0 ? (
             <div className="flex flex-col items-center justify-center flex-1 py-16 text-center">
-              <p className="text-slate-500 mb-2">No restaurants matching your budget tier found in this area.</p>
-              <p className="text-sm text-slate-400">Try changing your budget settings or increasing your search radius.</p>
+              <p className="text-slate-500 mb-2">No restaurants found matching your criteria.</p>
+              <p className="text-sm text-slate-400">Try adjusting your search query, sorting options, or budget tier.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {filteredPlaces.map((place) => (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {paginatedPlaces.map((place) => (
                 <div 
                   key={place.id}
                   className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col"
@@ -338,7 +448,43 @@ export default function RestaurantsPage() {
                 </div>
               ))}
             </div>
-          )}
+            
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-10">
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-3.5 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                >
+                  Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    type="button"
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`w-9 h-9 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      currentPage === pageNum
+                        ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
+                        : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="px-3.5 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </>)}
         </div>
       )}
 

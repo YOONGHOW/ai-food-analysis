@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 
 // Initialize Gemini AI client if key is configured
 const geminiApiKey = process.env.GEMINI_API_KEY;
@@ -70,7 +70,7 @@ function cleanAndParseJSON(text: string) {
 }
 
 // Helper function to call Gemini and generate structured menu
-async function generateMenu(placeId: string, name: string, vicinity: string, reviews: any[]) {
+async function generateMenu(placeId: string, name: string, vicinity: string) {
   if (!genAI) return null;
   try {
     // 1. Search the web for menu items first
@@ -81,7 +81,21 @@ async function generateMenu(placeId: string, name: string, vicinity: string, rev
     console.log(`[Gemini Research] Generating menu for "${name}"...`);
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
-      generationConfig: { responseMimeType: "application/json" }
+      generationConfig: { 
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: SchemaType.ARRAY,
+          items: {
+            type: SchemaType.OBJECT,
+            properties: {
+              name: { type: SchemaType.STRING },
+              desc: { type: SchemaType.STRING },
+              price: { type: SchemaType.STRING }
+            },
+            required: ["name", "desc", "price"]
+          }
+        }
+      }
     });
 
     const prompt = `
@@ -94,12 +108,9 @@ async function generateMenu(placeId: string, name: string, vicinity: string, rev
       ${searchResults.length > 0 ? `Web Search Results:
       ${searchResults.map((s, idx) => `${idx + 1}. ${s}`).join('\n')}` : ''}
       
-      Customer Reviews:
-      ${reviews.slice(0, 3).map(r => `- ${r.text.substring(0, 250)}`).join('\n')}
-      
       Instructions:
-      1. Extract actual dishes mentioned by customers in the web search results and reviews, and estimate their price in RM (Malaysian Ringgit).
-      2. If neither web search nor reviews mention enough dishes, use your general knowledge of this specific restaurant or its cuisine type to create highly realistic, signature Malaysian dishes.
+      1. Extract actual dishes mentioned in the web search results, and estimate their price in RM (Malaysian Ringgit).
+      2. If web search results do not mention enough dishes, use your general knowledge of this specific restaurant or its cuisine type to create highly realistic, signature Malaysian dishes.
       3. Ensure the prices are realistic for the location and style (e.g. cheaper for hawkers/kopitiams, moderate for cafes, expensive for fine dining).
       4. You MUST return a JSON array containing objects with these exact keys: "name" (dish name), "desc" (short description), and "price" (format: "RM XX.XX").
       
@@ -176,7 +187,7 @@ export async function GET(request: Request) {
         // we generate the menu highlights now and update the database cache!
         if ((!menuHighlights || menuHighlights.length === 0) && genAI) {
           console.log(`[Cache Self-Heal] Menu highlights missing in DB for "${cachedDetails.name}". Generating now...`);
-          menuHighlights = await generateMenu(placeId, cachedDetails.name, cachedDetails.vicinity, cachedDetails.reviews || []);
+          menuHighlights = await generateMenu(placeId, cachedDetails.name, cachedDetails.vicinity);
           if (menuHighlights) {
             await supabase
               .from('details_cache')
@@ -244,9 +255,9 @@ export async function GET(request: Request) {
     };
 
     // 3. Generate Menu Highlights using Gemini AI (if configured)
-    const menuHighlights = await generateMenu(placeId, details.name, details.vicinity, details.reviews);
+    const menuHighlights = await generateMenu(placeId, details.name, details.vicinity);
 
-    // 4. Save to DB Cache asynchronously (if Supabase is configured)
+    // 4. Save to DB Cache (if Supabase is configured)
     if (supabase) {
       const dbRow: any = {
         id: details.id,
@@ -260,19 +271,22 @@ export async function GET(request: Request) {
         weekday_text: details.weekdayText,
         photos: details.photos,
         reviews: details.reviews,
-        menu_highlights: menuHighlights
+        menu_highlights: menuHighlights,
+        created_at: new Date().toISOString()
       };
 
-      supabase
-        .from('details_cache')
-        .upsert(dbRow, { onConflict: 'id' })
-        .then(({ error: insertError }) => {
-          if (insertError) {
-            console.error("[Supabase Details Cache Write Error] Failed to write cache:", insertError.message);
-          } else {
-            console.log(`[Cache WRITE] Cached details with menu highlights for place ID "${placeId}" in Supabase.`);
-          }
-        });
+      try {
+        const { error: insertError } = await supabase
+          .from('details_cache')
+          .upsert(dbRow, { onConflict: 'id' });
+        if (insertError) {
+          console.error("[Supabase Details Cache Write Error] Failed to write cache:", insertError.message);
+        } else {
+          console.log(`[Cache WRITE] Cached details with menu highlights for place ID "${placeId}" in Supabase.`);
+        }
+      } catch (err) {
+        console.error("Supabase details cache write exception:", err);
+      }
     }
 
     return NextResponse.json({

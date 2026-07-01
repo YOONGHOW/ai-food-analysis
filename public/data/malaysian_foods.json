@@ -673,7 +673,7 @@
     "cuisine": "Chinese",
     "category": "Hotpot",
     "style": "soup",
-    "flavor": "spicy",
+    "flavor": "non-spicy",
     "halal": true,
     "ingredients": [
       "Skewered meat and seafood",
@@ -691,7 +691,7 @@
     "cuisine": "Chinese",
     "category": "Hotpot",
     "style": "soup",
-    "flavor": "spicy",
+    "flavor": "non-spicy",
     "halal": true,
     "ingredients": [
       "Sliced meats (chicken/beef/pork)",

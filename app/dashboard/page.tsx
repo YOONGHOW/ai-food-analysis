@@ -17,7 +17,8 @@ import {
   Sun,
   CloudLightning,
   Cloudy,
-  LayoutDashboard
+  LayoutDashboard,
+  Brain
 } from "lucide-react";
 import Link from "next/link";
 import { useSettings } from "../context/SettingsContext";
@@ -153,7 +154,7 @@ export default function DashboardPage() {
 
       // Rain codes: 51, 53, 55 (drizzle), 61, 63, 65 (rain), 80, 81, 82 (showers), 95, 96, 99 (thunderstorm)
       const isRainy = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(code);
-      const isCold = temp < 32.0;
+      const isCold = temp < 28.0;
 
       setWeatherData({
         temp,
@@ -177,10 +178,11 @@ export default function DashboardPage() {
   // Determine weather summary parameters
   const isCozyWeather = weather ? (weather.isRainy || weather.isCold) : false;
 
-  // Curated soup and hotpot suggestions matching spice filter
+  // Curated comfort food suggestions matching weather and spice filter
   const cozySuggestions = foods.filter(f => {
     // Check if it's hotpot or soup
     const isSoupFood = f.category.toLowerCase().includes("soup") ||
+      f.category.toLowerCase().includes("hotpot") ||
       f.name.toLowerCase().includes("soup") ||
       f.name.toLowerCase().includes("hotpot") ||
       f.description.toLowerCase().includes("soup") ||
@@ -188,14 +190,28 @@ export default function DashboardPage() {
       f.description.toLowerCase().includes("broth") ||
       f.description.toLowerCase().includes("gravy");
 
-    if (!isSoupFood) return false;
-
-    // Filter by spicy preference
-    if (localSpicyFilter) {
-      return f.flavor.toLowerCase() === "spicy";
+    // If cozy (rainy/cold), we want soup/hotpot.
+    // If warm/cloudy, we want dry/non-soup food!
+    if (isCozyWeather) {
+      if (!isSoupFood) return false;
+    } else {
+      if (isSoupFood) return false;
     }
-    return true;
-  }).slice(0, 3); // Max 3 suggestions
+
+    // Filter by spicy preference (strict matching)
+    return (f.flavor.toLowerCase() === "spicy") === localSpicyFilter;
+  })
+  .sort((a, b) => {
+    if (isCozyWeather) {
+      // Prioritize "Hotpot" category or name containing "hotpot"
+      const aIsHotpot = a.category.toLowerCase().includes("hotpot") || a.name.toLowerCase().includes("hotpot");
+      const bIsHotpot = b.category.toLowerCase().includes("hotpot") || b.name.toLowerCase().includes("hotpot");
+      if (aIsHotpot && !bIsHotpot) return -1;
+      if (!aIsHotpot && bIsHotpot) return 1;
+    }
+    return 0;
+  })
+  .slice(0, 6); // Max 6 suggestions
 
   // Main browse food listing filter
   const filteredFoods = foods.filter(f => {
@@ -210,8 +226,8 @@ export default function DashboardPage() {
     // Cuisine match
     const matchesCuisine = selectedCuisine === "all" || f.cuisine === selectedCuisine;
 
-    // Spicy preference match
-    const matchesSpicy = !localSpicyFilter || f.flavor.toLowerCase() === "spicy";
+    // Spicy preference match (strict matching)
+    const matchesSpicy = (f.flavor.toLowerCase() === "spicy") === localSpicyFilter;
 
     return matchesSearch && matchesCategory && matchesCuisine && matchesSpicy;
   });
@@ -263,7 +279,7 @@ export default function DashboardPage() {
             <span className="text-slate-500 dark:text-slate-400 font-medium">🌶️ Prefers Spicy:</span>
             <button
               onClick={() => setPrefersSpicy(!prefersSpicy)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer outline-none ${prefersSpicy ? "bg-orange-500" : "bg-slate-350 dark:bg-slate-850"}`}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer outline-none ${prefersSpicy ? "bg-orange-500" : "bg-slate-200 dark:bg-slate-800"}`}
             >
               <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${prefersSpicy ? "translate-x-6" : "translate-x-1"}`} />
             </button>
@@ -359,9 +375,9 @@ export default function DashboardPage() {
           </div>
 
           {weatherLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1">
+            <div className="flex flex-col gap-3 flex-1">
               {[1, 2, 3].map(i => (
-                <div key={i} className="bg-slate-100 dark:bg-slate-800/30 animate-pulse rounded-2xl h-36" />
+                <div key={i} className="bg-slate-100 dark:bg-slate-800/30 animate-pulse rounded-2xl h-20" />
               ))}
             </div>
           ) : cozySuggestions.length === 0 ? (
@@ -371,44 +387,44 @@ export default function DashboardPage() {
               <p className="text-xs text-slate-400 max-w-sm mt-0.5">Try toggling off the spicy preference filter to see more dishes.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1">
+            <div className="flex flex-col gap-3 overflow-y-auto pr-1 max-h-[290px] flex-1 scrollbar-thin scrollbar-thumb-slate-250 dark:scrollbar-thumb-slate-800">
               {cozySuggestions.map(f => (
                 <div
                   key={f.id}
                   onClick={() => setSelectedFood(f)}
-                  className="group bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-2xl p-3 flex flex-col justify-between hover:border-orange-500/60 dark:hover:border-orange-500/60 transition-all duration-300 cursor-pointer hover:shadow-md"
+                  className="group bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/80 rounded-2xl p-3 flex items-center justify-between hover:border-orange-500/60 dark:hover:border-orange-500/60 transition-all duration-300 cursor-pointer hover:shadow-md"
                 >
-                  <div className="space-y-2">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
                     {/* Food image */}
-                    <div className="w-full h-20 rounded-xl relative overflow-hidden bg-slate-200 dark:bg-slate-800">
+                    <div className="w-16 h-16 rounded-xl relative overflow-hidden bg-slate-200 dark:bg-slate-800 flex-shrink-0">
                       {f.imageUrl && !foodImageErrors[f.id] ? (
                         <img
                           src={f.imageUrl}
                           alt={f.name}
                           onError={() => handleImageError(f.id)}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-slate-400">
-                          <Soup size={20} />
+                          <Soup size={16} />
                         </div>
                       )}
                     </div>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <span className="text-[10px] text-orange-600 dark:text-orange-400 font-bold uppercase tracking-wider block">
                         {f.cuisine} • {f.category}
                       </span>
-                      <h4 className="font-bold text-sm text-slate-900 dark:text-white line-clamp-1 mt-0.5">
+                      <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate mt-0.5">
                         {f.name}
                       </h4>
+                      <p className="text-xs text-slate-450 dark:text-slate-500 truncate mt-0.5">
+                        🌶️ {f.flavor} • {f.description}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100 dark:border-slate-900">
-                    <span className="text-[10px] text-slate-450 dark:text-slate-500 truncate max-w-[80px]">
-                      🌶5 {f.flavor}
-                    </span>
-                    <span className="text-[10px] font-bold text-orange-500 flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
+                  <div className="pl-3 flex-shrink-0">
+                    <span className="text-xs font-bold text-orange-500 flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
                       View <ArrowRight size={10} />
                     </span>
                   </div>
@@ -431,7 +447,7 @@ export default function DashboardPage() {
           <UtensilsCrossed size={16} className="text-orange-500" />
           Quick Food Deciders
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Spin the Wheel card */}
           <Link
             href="/roulette"
@@ -463,6 +479,23 @@ export default function DashboardPage() {
             </div>
             <div className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full group-hover:translate-x-1 transition-transform">
               <ArrowRight size={20} className="text-rose-500" />
+            </div>
+          </Link>
+
+          {/* AI Food Therapist card */}
+          <Link
+            href="/ai-advisor"
+            className="group p-6 rounded-3xl bg-gradient-to-r from-indigo-500/10 via-indigo-500/5 to-transparent dark:from-indigo-500/10 dark:via-transparent border border-indigo-500/20 dark:border-indigo-500/10 hover:border-indigo-500/40 transition-all duration-350 shadow-sm flex items-center justify-between"
+          >
+            <div className="space-y-2 max-w-[70%]">
+              <div className="p-3 bg-indigo-500 text-white rounded-2xl w-fit shadow-md shadow-indigo-500/20 group-hover:scale-110 transition-transform">
+                <Brain size={24} />
+              </div>
+              <h4 className="text-lg font-extrabold text-slate-900 dark:text-white">AI Food Therapist</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Can't decide? Let our AI interview you and prescribe the perfect meal based on your mood & health goal!</p>
+            </div>
+            <div className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full group-hover:translate-x-1 transition-transform">
+              <ArrowRight size={20} className="text-indigo-500" />
             </div>
           </Link>
         </div>
