@@ -34,7 +34,7 @@ interface RestaurantDetailsModalProps {
 }
 
 // Generate smart mock menu items based on restaurant name
-function getMenuHighlights(name: string): { name: string; desc: string; price: string }[] {
+export function getMenuHighlights(name: string): { name: string; desc: string; price: string }[] {
   const lowercaseName = name.toLowerCase();
 
   if (lowercaseName.includes("hotpot") || lowercaseName.includes("hot pot") || lowercaseName.includes("steamboat")) {

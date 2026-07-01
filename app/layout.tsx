@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import { SettingsProvider } from "./context/SettingsContext";
 import { AuthProvider } from "./context/AuthContext";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "Makan Mana? | Penang Food Decider",
+  title: "CariMakan?",
   description: "Can't decide what to eat in Penang? Let us help you out!",
 };
 
@@ -19,9 +16,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.className} h-full antialiased`}>
+    <html lang="en" className="h-full antialiased font-sans" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `
+        <script dangerouslySetInnerHTML={{
+          __html: `
           try {
             if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
               document.documentElement.classList.add('dark')

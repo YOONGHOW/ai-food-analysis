@@ -37,7 +37,9 @@ export async function GET(request: Request) {
   }
 
   // 1. Check DB Cache First (if Supabase is configured and not forced refresh)
-  if (supabase && !refresh) {
+  // Only use cache for generic 'food' or 'restaurant' searches. Specific keywords (e.g. 'Nasi Lemak') should query Google Places directly to avoid cache pollution.
+  const isGenericSearch = !keyword || keyword.toLowerCase() === 'food' || keyword.toLowerCase() === 'restaurant';
+  if (supabase && !refresh && isGenericSearch) {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 

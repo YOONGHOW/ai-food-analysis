@@ -65,28 +65,37 @@ function SwipeCard({
   onSwipe,
   index,
   total,
+  disabled = false,
 }: {
   place: Place;
   onSwipe: (liked: boolean) => void;
   index: number;
   total: number;
+  disabled?: boolean;
 }) {
+  const { toggleFavorite, isFavorite } = useSettings();
   const [swipeDir, setSwipeDir] = useState<"left" | "right" | null>(null);
   const [startX, setStartX] = useState(0);
   const [dragX, setDragX] = useState(0);
   const isDragging = useRef(false);
 
   const handlePointerDown = (e: React.PointerEvent) => {
+    if (disabled) return;
     isDragging.current = true;
     setStartX(e.clientX);
   };
   const handlePointerMove = (e: React.PointerEvent) => {
+    if (disabled) return;
     if (!isDragging.current) return;
     setDragX(e.clientX - startX);
   };
   const handlePointerUp = () => {
     if (!isDragging.current) return;
     isDragging.current = false;
+    if (disabled) {
+      setDragX(0);
+      return;
+    }
     if (Math.abs(dragX) > 80) {
       const liked = dragX > 0;
       setSwipeDir(liked ? "right" : "left");
@@ -109,13 +118,14 @@ function SwipeCard({
         transform: swipeDir === "right"
           ? "translateX(120%) rotate(20deg)"
           : swipeDir === "left"
-          ? "translateX(-120%) rotate(-20deg)"
-          : `translateX(${dragX}px) rotate(${rotation}deg)`,
+            ? "translateX(-120%) rotate(-20deg)"
+            : `translateX(${dragX}px) rotate(${rotation}deg)`,
         transition: swipeDir || Math.abs(dragX) < 5 ? "all 0.3s ease" : "none",
         opacity: swipeDir ? 0 : opacity,
         touchAction: "none",
       }}
-      className="relative w-full aspect-[3/4] select-none cursor-grab active:cursor-grabbing"
+      className={`relative w-full aspect-[3/4] select-none ${disabled ? "cursor-not-allowed opacity-80" : "cursor-grab active:cursor-grabbing"
+        }`}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -151,6 +161,20 @@ function SwipeCard({
           </div>
         )}
 
+        {/* Favorite Button */}
+        <button
+          type="button"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFavorite(place);
+          }}
+          className="absolute top-4 left-4 p-2.5 bg-black/45 hover:bg-black/60 text-rose-500 rounded-full backdrop-blur-sm shadow-md transition-transform active:scale-95 hover:scale-105 z-20 cursor-pointer"
+          aria-label={isFavorite(place.id) ? "Remove from favorites" : "Add to favorites"}
+        >
+          <Heart size={16} className={isFavorite(place.id) ? "fill-rose-500 text-rose-500" : "text-white"} />
+        </button>
+
         {/* Counter badge */}
         <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full z-10">
           {index + 1}/{total}
@@ -179,13 +203,17 @@ function SwipeCard({
 }
 
 export default function CouplesSwipePage() {
-  const { state, place, radius } = useSettings();
+  const { state, place, radius, useCurrentLocation, favorites, toggleFavorite, isFavorite } = useSettings();
 
   const [mode, setMode] = useState<Mode>("setup");
   const [p1Name, setP1Name] = useState("You");
   const [p2Name, setP2Name] = useState("Partner");
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Favorites Only Mode toggle
+  const [useFavoritesOnly, setUseFavoritesOnly] = useState(false);
 
   // Local mode state
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -204,17 +232,37 @@ export default function CouplesSwipePage() {
   const channelRef = useRef<any>(null);
   const myIdRef = useRef(`player-${Math.random().toString(36).slice(2, 8)}`);
 
+  // 12-second countdown timer state
+  const [timeLeft, setTimeLeft] = useState(12);
+
   const fetchPlaces = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const res = await fetch(`/api/places?state=${encodeURIComponent(state)}&place=${encodeURIComponent(place)}&radius=${radius}`);
-      const data = await res.json();
-      if (data.places) {
-        const shuffled = [...data.places].sort(() => 0.5 - Math.random());
+      if (useFavoritesOnly) {
+        const localFavorites = favorites.filter(p =>
+          p.state?.toLowerCase() === state.toLowerCase() &&
+          p.placeName?.toLowerCase() === place.toLowerCase()
+        );
+        if (localFavorites.length === 0) {
+          throw new Error(`No favorite restaurants saved in ${place}, ${state} yet! Add some from the Browse page first.`);
+        }
+        const shuffled = [...localFavorites].sort(() => 0.5 - Math.random());
         setPlaces(shuffled.slice(0, 12));
+      } else {
+        const queryRadius = useCurrentLocation ? radius : 3000;
+        const res = await fetch(`/api/places?state=${encodeURIComponent(state)}&place=${encodeURIComponent(place)}&radius=${queryRadius}`);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        if (data.places) {
+          const shuffled = [...data.places].sort(() => 0.5 - Math.random());
+          setPlaces(shuffled.slice(0, 12));
+        }
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      setError(e.message || "Failed to fetch restaurants.");
+      setPlaces([]);
     } finally {
       setLoading(false);
     }
@@ -227,6 +275,7 @@ export default function CouplesSwipePage() {
     setP1Likes(new Set());
     setP2Likes(new Set());
     setMatchedPlace(null);
+    setTimeLeft(12);
     await fetchPlaces();
   };
 
@@ -236,9 +285,11 @@ export default function CouplesSwipePage() {
 
     if (currentIndex < places.length - 1) {
       setCurrentIndex(i => i + 1);
+      setTimeLeft(12);
     } else {
       setMode("local-handoff");
       setCurrentIndex(0);
+      setTimeLeft(12);
     }
   };
 
@@ -256,6 +307,7 @@ export default function CouplesSwipePage() {
 
     if (currentIndex < places.length - 1) {
       setCurrentIndex(i => i + 1);
+      setTimeLeft(12);
     } else {
       setMode("no-match");
     }
@@ -295,18 +347,10 @@ export default function CouplesSwipePage() {
         const { placeId, liked, from } = payload;
         if (from === myIdRef.current) return;
 
-        setOnlineVotes(prev => {
-          const updated: Record<string, { me?: boolean; partner?: boolean }> = { ...prev, [placeId as string]: { ...prev[placeId as string], partner: liked } };
-          // Check for match
-          if (liked && updated[placeId]?.me === true) {
-            const matched = places.find(p => p.id === placeId);
-            if (matched) {
-              setMatchedPlace(matched);
-              setMode("match");
-            }
-          }
-          return updated;
-        });
+        setOnlineVotes(prev => ({
+          ...prev,
+          [placeId as string]: { ...prev[placeId as string], partner: liked }
+        }));
       })
       .on("broadcast", { event: "places" }, ({ payload }: any) => {
         if (!host) setPlaces(payload.places);
@@ -338,15 +382,10 @@ export default function CouplesSwipePage() {
     if (!current) return;
 
     // Record my vote
-    setOnlineVotes(prev => {
-      const updated = { ...prev, [current.id]: { ...prev[current.id], me: liked } };
-      // Check for match
-      if (liked && updated[current.id]?.partner === true) {
-        setMatchedPlace(current);
-        setMode("match");
-      }
-      return updated;
-    });
+    setOnlineVotes(prev => ({
+      ...prev,
+      [current.id]: { ...prev[current.id], me: liked }
+    }));
 
     // Broadcast vote
     if (channelRef.current) {
@@ -356,13 +395,80 @@ export default function CouplesSwipePage() {
         payload: { placeId: current.id, liked, from: myIdRef.current },
       });
     }
-
-    if (onlineIndex < places.length - 1) {
-      setOnlineIndex(i => i + 1);
-    } else {
-      setMode("no-match");
-    }
   };
+
+  // Swiping modes derived helpers
+  const isLocalP1 = mode === "local-p1";
+  const isLocalP2 = mode === "local-p2";
+  const isOnline = mode === "online-game";
+
+  const currentSwipeIndex = isOnline ? onlineIndex : currentIndex;
+  const currentPlace = places[currentSwipeIndex];
+  const playerName = isLocalP2 ? p2Name : p1Name;
+  const handleSwipe = isOnline ? handleOnlineSwipe : isLocalP2 ? handleP2Swipe : handleP1Swipe;
+
+  // 1. Reset timer to 12 when index changes
+  useEffect(() => {
+    if (!isLocalP1 && !isLocalP2 && !isOnline) return;
+    if (loading || !currentPlace) return;
+    setTimeLeft(12);
+  }, [currentIndex, onlineIndex, isLocalP1, isLocalP2, isOnline, loading, currentPlace]);
+
+  // 2. Countdown timer effect
+  useEffect(() => {
+    if (!isLocalP1 && !isLocalP2 && !isOnline) return;
+    if (loading || !currentPlace) return;
+
+    // In online mode, if this player already voted, stop the countdown
+    const hasVotedMe = isOnline && onlineVotes[currentPlace.id]?.me !== undefined;
+    if (hasVotedMe) return;
+
+    if (timeLeft <= 0) {
+      // Timeout! Auto swipe false (Nope)
+      if (isOnline) {
+        handleOnlineSwipe(false);
+      } else if (isLocalP2) {
+        handleP2Swipe(false);
+      } else if (isLocalP1) {
+        handleP1Swipe(false);
+      }
+      return;
+    }
+
+    const timerId = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timerId);
+  }, [timeLeft, isLocalP1, isLocalP2, isOnline, loading, currentPlace, onlineVotes, currentIndex, onlineIndex]);
+
+  // 3. Online mode synchronized transition effect
+  useEffect(() => {
+    if (mode !== "online-game" || !places.length) return;
+    const current = places[onlineIndex];
+    if (!current) return;
+
+    const votes = onlineVotes[current.id];
+    if (votes && votes.me !== undefined && votes.partner !== undefined) {
+      // Both have voted!
+      if (votes.me && votes.partner) {
+        // MATCH!
+        setMatchedPlace(current);
+        setMode("match");
+      } else {
+        // No match on this card, wait 1000ms and move to next card
+        const timer = setTimeout(() => {
+          if (onlineIndex < places.length - 1) {
+            setOnlineIndex(i => i + 1);
+            setTimeLeft(12);
+          } else {
+            setMode("no-match");
+          }
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [onlineVotes, onlineIndex, places, mode]);
 
   const roomUrl = typeof window !== "undefined" && roomId
     ? `${window.location.origin}/couples-swipe?join=${roomId}`
@@ -397,6 +503,7 @@ export default function CouplesSwipePage() {
     setPartnerConnected(false);
     setOnlineVotes({});
     setOnlineIndex(0);
+    setTimeLeft(12);
   };
 
   // ── RENDER ──────────────────────────────────────────────────────────────────
@@ -426,7 +533,17 @@ export default function CouplesSwipePage() {
                 </div>
               )}
               <div className="p-5 text-left">
-                <h3 className="text-xl font-extrabold mb-1">{matchedPlace.name}</h3>
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <h3 className="text-xl font-extrabold line-clamp-1 flex-1">{matchedPlace.name}</h3>
+                  <button
+                    type="button"
+                    onClick={() => toggleFavorite(matchedPlace)}
+                    className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-rose-500 transition-colors cursor-pointer flex-shrink-0"
+                    aria-label={isFavorite(matchedPlace.id) ? "Remove from favorites" : "Add to favorites"}
+                  >
+                    <Heart size={18} className={isFavorite(matchedPlace.id) ? "fill-rose-500 text-rose-500 animate-in zoom-in-50 duration-200" : "transition-transform active:scale-90"} />
+                  </button>
+                </div>
                 <div className="flex items-center gap-3 text-sm mb-2">
                   {matchedPlace.rating ? (
                     <div className="flex items-center gap-1 text-slate-500">
@@ -576,15 +693,41 @@ export default function CouplesSwipePage() {
     );
   }
 
-  // Swiping screens (local-p1, local-p2, online-game)
-  const isLocalP1 = mode === "local-p1";
-  const isLocalP2 = mode === "local-p2";
-  const isOnline = mode === "online-game";
+  // Skeleton loading state for online live mode before cards/lobby are fully loaded
+  if (isOnline && (places.length === 0 || !currentPlace)) {
+    return (
+      <div className="flex flex-col items-center justify-center flex-1 w-full px-4 py-8 animate-pulse">
+        <div className="max-w-sm w-full">
+          {/* Header Skeleton */}
+          <div className="text-center mb-4 flex flex-col items-center gap-2">
+            <div className="h-4 w-32 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+            <div className="h-3 w-48 bg-slate-100 dark:bg-slate-900 rounded-lg" />
+          </div>
 
-  const currentSwipeIndex = isOnline ? onlineIndex : currentIndex;
-  const currentPlace = places[currentSwipeIndex];
-  const playerName = isLocalP2 ? p2Name : p1Name;
-  const handleSwipe = isOnline ? handleOnlineSwipe : isLocalP2 ? handleP2Swipe : handleP1Swipe;
+          {/* Progress Bar Skeleton */}
+          <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full mb-6" />
+
+          {/* Card Skeleton */}
+          <div className="relative w-full aspect-[3/4] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl flex flex-col items-center justify-center p-6 text-center">
+            <Loader2 className="animate-spin text-orange-500 mb-4" size={40} />
+            <p className="font-bold text-slate-700 dark:text-slate-350 text-base mb-1">Connecting to Live Lobby...</p>
+            <p className="text-xs text-slate-400 max-w-[240px]">Waiting for host to start the game and synchronize restaurant cards.</p>
+          </div>
+
+          {/* Buttons Skeleton */}
+          <div className="flex items-center justify-center gap-8 mt-6">
+            <div className="w-16 h-16 bg-slate-200 dark:bg-slate-800 rounded-full" />
+            <div className="w-16 h-16 bg-slate-200 dark:bg-slate-800 rounded-full" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const currentVotes = isOnline && currentPlace ? onlineVotes[currentPlace.id] : null;
+  const isLocked = isOnline && currentVotes?.me !== undefined;
+  const waitingForPartner = isOnline && currentVotes?.me !== undefined && currentVotes?.partner === undefined;
+  const isNotMatchCard = isOnline && currentVotes?.me !== undefined && currentVotes?.partner !== undefined && !(currentVotes.me && currentVotes.partner);
 
   if ((isLocalP1 || isLocalP2 || isOnline) && !loading && currentPlace) {
     return (
@@ -604,26 +747,63 @@ export default function CouplesSwipePage() {
             <p className="text-xs text-slate-400 mt-1">Swipe right to like, left to skip</p>
           </div>
 
+          {/* Timer Progress Bar */}
+          <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full mb-6 overflow-hidden relative">
+            <div
+              className={`h-full transition-all duration-1000 ease-linear ${timeLeft > 6
+                  ? "bg-gradient-to-r from-green-500 to-emerald-400"
+                  : timeLeft > 3
+                    ? "bg-gradient-to-r from-amber-500 to-orange-400"
+                    : "bg-gradient-to-r from-red-500 to-rose-500 animate-pulse"
+                }`}
+              style={{ width: `${(timeLeft / 12) * 100}%` }}
+            />
+          </div>
+
           {/* Card */}
-          <SwipeCard
-            key={currentPlace.id}
-            place={currentPlace}
-            onSwipe={handleSwipe}
-            index={currentSwipeIndex}
-            total={places.length}
-          />
+          <div className="relative">
+            <SwipeCard
+              key={currentPlace.id}
+              place={currentPlace}
+              onSwipe={handleSwipe}
+              index={currentSwipeIndex}
+              total={places.length}
+              disabled={isLocked}
+            />
+
+            {/* Timer Overlay / Lock Overlay */}
+            {isOnline && isLocked && (
+              <div className="absolute inset-0 bg-slate-950/75 backdrop-blur-sm rounded-3xl flex flex-col items-center justify-center z-20 text-white animate-fade-in p-6">
+                {waitingForPartner ? (
+                  <>
+                    <Loader2 className="animate-spin text-orange-500 mb-3" size={40} />
+                    <p className="font-bold text-lg mb-1">Choice Locked!</p>
+                    <p className="text-xs text-slate-300 text-center">Waiting for your partner to decide...</p>
+                  </>
+                ) : isNotMatchCard ? (
+                  <>
+                    <X className="text-rose-500 mb-3 animate-bounce" size={48} />
+                    <p className="font-bold text-lg text-rose-400 mb-1">No Match</p>
+                    <p className="text-xs text-slate-300 text-center">Moving to next restaurant...</p>
+                  </>
+                ) : null}
+              </div>
+            )}
+          </div>
 
           {/* Buttons */}
           <div className="flex items-center justify-center gap-8 mt-6">
             <button
               onClick={() => handleSwipe(false)}
-              className="w-16 h-16 bg-white dark:bg-slate-900 border-2 border-rose-200 dark:border-rose-800 text-rose-500 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all cursor-pointer"
+              disabled={isLocked}
+              className="w-16 h-16 bg-white dark:bg-slate-900 border-2 border-rose-200 dark:border-rose-800 text-rose-500 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all cursor-pointer disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed"
             >
               <X size={32} />
             </button>
             <button
               onClick={() => handleSwipe(true)}
-              className="w-16 h-16 bg-white dark:bg-slate-900 border-2 border-green-200 dark:border-green-800 text-green-500 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all cursor-pointer"
+              disabled={isLocked}
+              className="w-16 h-16 bg-white dark:bg-slate-900 border-2 border-green-200 dark:border-green-800 text-green-500 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all cursor-pointer disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed"
             >
               <Heart size={32} fill="currentColor" />
             </button>
@@ -656,6 +836,40 @@ export default function CouplesSwipePage() {
             Find a restaurant you <em>both</em> love — no more arguments!
           </p>
         </div>
+
+        {/* Favorites Only Mode Toggle */}
+        <div
+          onClick={() => {
+            setUseFavoritesOnly(v => !v);
+          }}
+          className={`w-full mb-5 p-3.5 rounded-2xl border-2 flex items-center justify-between cursor-pointer transition-all duration-300 ${useFavoritesOnly
+              ? "border-rose-500 bg-rose-50 dark:bg-rose-950/30"
+              : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300"
+            }`}
+        >
+          <div className="flex items-center gap-3">
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${useFavoritesOnly ? "bg-rose-500 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-400"}`}>
+              <Heart size={18} className={useFavoritesOnly ? "fill-white text-white" : ""} />
+            </div>
+            <div>
+              <p className={`text-sm font-bold ${useFavoritesOnly ? "text-rose-600 dark:text-rose-400" : "text-slate-700 dark:text-slate-300"}`}>
+                Favorites Only Mode
+              </p>
+              <p className="text-xs text-slate-400">
+                Only swipe your favorited food spots
+              </p>
+            </div>
+          </div>
+          <div className={`w-12 h-6 rounded-full transition-all duration-300 flex items-center px-1 ${useFavoritesOnly ? "bg-rose-500 justify-end" : "bg-slate-200 dark:bg-slate-700 justify-start"}`}>
+            <div className="w-4 h-4 bg-white rounded-full shadow" />
+          </div>
+        </div>
+
+        {error && (
+          <div className="mb-5 p-3 bg-rose-55 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 rounded-xl text-xs text-rose-500 font-semibold text-center leading-relaxed">
+            {error}
+          </div>
+        )}
 
         {/* Names */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 mb-5 shadow-sm">

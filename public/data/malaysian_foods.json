@@ -1,0 +1,1086 @@
+[
+  {
+    "id": "food-001",
+    "name": "Nasi Lemak",
+    "cuisine": "Malay",
+    "category": "Rice",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Fragrant coconut rice",
+      "Sambal",
+      "Crispy anchovies",
+      "Roasted peanuts",
+      "Hard-boiled egg",
+      "Cucumber"
+    ],
+    "description": "Malaysia's national dish—fragrant rice cooked in coconut milk and pandan leaf, served with spicy sambal, fried anchovies, peanuts, and egg.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/nasi_lemak.jpg"
+  },
+  {
+    "id": "food-002",
+    "name": "Nasi Kerabu",
+    "cuisine": "Malay",
+    "category": "Rice",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Blue butterfly pea rice",
+      "Salted egg",
+      "Fish crackers",
+      "Spiced sauce (Sambal Tumis)",
+      "Toasted coconut flakes",
+      "Assorted raw herbs (Ulam)"
+    ],
+    "description": "A Kelantanese specialty featuring blue-hued rice served with a vibrant array of fresh herbs, fish crackers, salted egg, and local gravies.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/nasi_kerabu.jpg"
+  },
+  {
+    "id": "food-003",
+    "name": "Nasi Dagang",
+    "cuisine": "Malay",
+    "category": "Rice",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Red cargo & glutinous rice",
+      "Coconut milk",
+      "Fenugreek seeds",
+      "Tuna curry (Gulai Darat)",
+      "Pickled cucumber and carrots"
+    ],
+    "description": "A popular breakfast dish from Terengganu consisting of steamed coconut-scented red glutinous rice, served with a rich tuna fish curry.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/nasi_dagang.jpg"
+  },
+  {
+    "id": "food-004",
+    "name": "Hainanese Chicken Rice",
+    "cuisine": "Chinese",
+    "category": "Rice",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Poached or roasted chicken",
+      "Seasoned chicken rice",
+      "Garlic chili sauce",
+      "Minced ginger paste",
+      "Soy sauce broth"
+    ],
+    "description": "Fragrant seasoned rice served with perfectly poached or roasted chicken, accompanied by spicy garlic-chili sauce and ginger paste.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/hainanese_chicken.jpg"
+  },
+  {
+    "id": "food-005",
+    "name": "Nasi Kandar",
+    "cuisine": "Indian Muslim",
+    "category": "Rice",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Steamed white rice",
+      "Mixed curries (Kuah Banjir)",
+      "Fried chicken or mutton",
+      "Okra (lady's fingers)",
+      "Salted egg"
+    ],
+    "description": "A Penang institution featuring rice drenched in an assortment of rich curries, topped with your choice of spiced meats and vegetables.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/nasi_kandar.jpg"
+  },
+  {
+    "id": "food-006",
+    "name": "Claypot Chicken Rice",
+    "cuisine": "Chinese",
+    "category": "Rice",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": false,
+    "ingredients": [
+      "Rice",
+      "Chicken chunks",
+      "Chinese sausage (Lap Cheong)",
+      "Salted fish pieces",
+      "Dark sweet soy sauce",
+      "Spring onions"
+    ],
+    "description": "Fragrant rice cooked in a claypot over charcoal, infused with soy sauce, marinated chicken, salted fish, and sweet Chinese sausage.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/claypot_chicken.jpg"
+  },
+  {
+    "id": "food-007",
+    "name": "Nasi Goreng Kampung",
+    "cuisine": "Malay",
+    "category": "Rice",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Leftover rice",
+      "Crispy anchovies",
+      "Water spinach (Kangkung)",
+      "Bird's eye chili (Cili Padi)",
+      "Garlic",
+      "Egg"
+    ],
+    "description": "A rustic, homestyle Malaysian fried rice packed with the punchy flavor of crushed anchovies, garlic, and fiery bird's eye chilies.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/nasi_goreng_kampung.jpg"
+  },
+  {
+    "id": "food-008",
+    "name": "Nasi Tomato",
+    "cuisine": "Malay",
+    "category": "Rice",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Tomato paste & purée",
+      "Basmati rice",
+      "Spices (cardamom, cinnamon, star anise)",
+      "Ayam Masak Merah (tomato chicken)",
+      "Acar Jelatah (cucumber & pineapple salad)"
+    ],
+    "description": "Fragrant ghee rice cooked with tomato and aromatic spices, traditionally served with a rich, spicy-sweet tomato chicken dish.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/nasi_tomato.jpg"
+  },
+  {
+    "id": "food-009",
+    "name": "Nasi Hujan Panas",
+    "cuisine": "Malay",
+    "category": "Rice",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Basmati rice",
+      "Ghee",
+      "Milk",
+      "Natural food coloring",
+      "Beef Rendang or Mutton Curry"
+    ],
+    "description": "A festive, colorful ghee rice dish popular at weddings, often served alongside rich beef rendang or spicy mutton curry.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/nasi_hujan.jpg"
+  },
+  {
+    "id": "food-010",
+    "name": "Nasi Briyani",
+    "cuisine": "Indian",
+    "category": "Rice",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Basmati rice",
+      "Briyani spices",
+      "Marinated chicken or mutton",
+      "Dhal curry",
+      "Raita (yogurt salad)"
+    ],
+    "description": "Fragrant and deeply spiced rice layered with tender marinated meat, slow-cooked to capture the aromatic blend of saffron and spices.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/nasi_briyani.jpg"
+  },
+  {
+    "id": "food-011",
+    "name": "Economy Rice (Nasi Campur)",
+    "cuisine": "Chinese",
+    "category": "Rice",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": false,
+    "ingredients": [
+      "Steamed white rice",
+      "Sweet and sour pork",
+      "Stir-fried vegetables",
+      "Fried egg",
+      "Tofu"
+    ],
+    "description": "A budget-friendly daily staple offering a mountain of white rice paired with various stir-fries, meats, and vegetable side dishes.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/eco_rice.jpg"
+  },
+  {
+    "id": "food-012",
+    "name": "Nasi Lemak Pandan",
+    "cuisine": "Malay",
+    "category": "Rice",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Pandan coconut rice",
+      "Sweet-spicy sambal",
+      "Fried chicken (Ayam Goreng Berempah)",
+      "Anchovies",
+      "Boiled egg",
+      "Peanuts"
+    ],
+    "description": "A fragrant variation of Nasi Lemak where the rice is infused with fresh pandan juice, lending a bright green color and extra aroma.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/nasi_pandan.jpg"
+  },
+  {
+    "id": "food-013",
+    "name": "Penang Char Kway Teow",
+    "cuisine": "Chinese",
+    "category": "Noodles",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": false,
+    "ingredients": [
+      "Flat rice noodles (Kway Teow)",
+      "Fresh prawns",
+      "Cockles",
+      "Bean sprouts",
+      "Chives",
+      "Egg",
+      "Pork lard"
+    ],
+    "description": "Flat rice noodles stir-fried in a searing wok with soy sauce, fresh prawns, juicy cockles, crunchy bean sprouts, and aromatic chives.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/char_kway_teow.jpg"
+  },
+  {
+    "id": "food-014",
+    "name": "Curry Laksa / Curry Mee",
+    "cuisine": "Peranakan",
+    "category": "Noodles",
+    "style": "soup",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Yellow noodles & vermicelli",
+      "Rich coconut curry broth",
+      "Shredded chicken",
+      "Tofu puffs (Tau Pok)",
+      "Cockles",
+      "Mint leaves"
+    ],
+    "description": "A creamy, fiery noodle soup bathed in rich coconut curry broth, loaded with chicken, tofu puffs, beansprouts, and fresh mint.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/curry_mee.jpg"
+  },
+  {
+    "id": "food-015",
+    "name": "Penang Asam Laksa",
+    "cuisine": "Peranakan",
+    "category": "Noodles",
+    "style": "soup",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Thick rice noodles",
+      "Sour tamarind fish broth",
+      "Shredded mackerel (kembung)",
+      "Pineapple chunks",
+      "Fresh mint & ginger flower",
+      "Thick sweet shrimp paste"
+    ],
+    "description": "A tangy, spicy fish noodle soup flavored with tamarind, loaded with shredded mackerel, fresh mint, cucumber, and a sweet shrimp paste glaze.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/asam_laksa.jpg"
+  },
+  {
+    "id": "food-016",
+    "name": "Wonton Mee",
+    "cuisine": "Chinese",
+    "category": "Noodles",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": false,
+    "ingredients": [
+      "Springy thin egg noodles",
+      "Barbecued pork (Char Siu)",
+      "Pork wonton dumplings",
+      "Pickled green chilies",
+      "Lard & dark soy sauce mixture"
+    ],
+    "description": "Springy egg noodles tossed in a rich dark soy sauce and lard mixture, topped with tender barbecued pork and served with a side of wonton soup.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/wonton.jpg"
+  },
+  {
+    "id": "food-017",
+    "name": "KL Hokkien Mee",
+    "cuisine": "Chinese",
+    "category": "Noodles",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": false,
+    "ingredients": [
+      "Thick yellow noodles",
+      "Dark sweet soy sauce",
+      "Pork slices",
+      "Cabbage",
+      "Crispy pork lard (Chu Yau Char)",
+      "Squid"
+    ],
+    "description": "Thick yellow noodles braised over high heat in a rich, dark sweet soy sauce with pork, cabbage, and topped with crunchy fried pork lard.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/kl_hokkien.jpg"
+  },
+  {
+    "id": "food-018",
+    "name": "Penang Hokkien Mee (Prawn Mee)",
+    "cuisine": "Chinese",
+    "category": "Noodles",
+    "style": "soup",
+    "flavor": "spicy",
+    "halal": false,
+    "ingredients": [
+      "Yellow noodles & vermicelli",
+      "Spicy prawn and pork bone broth",
+      "Boiled prawns",
+      "Pork slices",
+      "Hard-boiled egg",
+      "Fried shallots"
+    ],
+    "description": "Noodles in a fragrant, reddish broth slow-brewed from shrimp heads and pork bones, garnished with prawns, egg, and fried shallots.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/pg_hokkien.jpg"
+  },
+  {
+    "id": "food-019",
+    "name": "Mee Goreng Mamak",
+    "cuisine": "Indian Muslim",
+    "category": "Noodles",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Yellow noodles",
+      "Tofu pieces",
+      "Potato cubes",
+      "Squid or chicken",
+      "Egg",
+      "Spicy Mamak chili paste",
+      "Lime juice"
+    ],
+    "description": "Wok-fried yellow noodles packed with potato cubes, tofu, egg, and a signature spicy-sweet chili paste, finished with a fresh squeeze of lime.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/mee_goreng.jpg"
+  },
+  {
+    "id": "food-020",
+    "name": "Mee Rebus",
+    "cuisine": "Malay",
+    "category": "Noodles",
+    "style": "soup",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Yellow noodles",
+      "Sweet potato gravy",
+      "Hard-boiled egg",
+      "Deep-fried tofu (Tau Kwa)",
+      "Crispy fritters",
+      "Bean sprouts"
+    ],
+    "description": "Yellow noodles served in a thick, slightly sweet gravy made from boiled sweet potatoes, beef stock, and spices, with assorted garnishes.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/mee_rebus.jpeg"
+  },
+  {
+    "id": "food-021",
+    "name": "Pan Mee (Hand-Torn)",
+    "cuisine": "Chinese",
+    "category": "Noodles",
+    "style": "soup",
+    "flavor": "non-spicy",
+    "halal": false,
+    "ingredients": [
+      "Hand-torn flat wheat noodles",
+      "Clear anchovy broth",
+      "Minced pork",
+      "Crispy anchovies",
+      "Shiitake mushrooms",
+      "Sweet leaf (Mani Cai)"
+    ],
+    "description": "Rustic, hand-torn flour noodles served in a clear, comforting anchovy soup, garnished with minced pork, crispy anchovies, and mushrooms.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/pan_mee.jpg"
+  },
+  {
+    "id": "food-022",
+    "name": "Chilli Pan Mee",
+    "cuisine": "Chinese",
+    "category": "Noodles",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": false,
+    "ingredients": [
+      "Dry flat wheat noodles",
+      "Crispy chili oil paste",
+      "Minced pork",
+      "Crispy fried anchovies",
+      "Poached soft-boiled egg"
+    ],
+    "description": "Dry noodles topped with flavorful minced pork, crispy anchovies, and a runny poached egg, designed to be mixed together with spicy chili paste.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/chilli_pan_mee.jpg"
+  },
+  {
+    "id": "food-023",
+    "name": "Loh Mee",
+    "cuisine": "Chinese",
+    "category": "Noodles",
+    "style": "soup",
+    "flavor": "non-spicy",
+    "halal": false,
+    "ingredients": [
+      "Thick flat yellow noodles",
+      "Starchy egg-drop broth",
+      "Pork slices",
+      "Chinese black vinegar",
+      "Minced garlic"
+    ],
+    "description": "Thick noodles served in a hearty, starchy dark gravy thickened with beaten eggs, flavored with black vinegar and fresh minced garlic.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/lor_mee.jpg"
+  },
+  {
+    "id": "food-024",
+    "name": "Mee Bandung Muar",
+    "cuisine": "Malay",
+    "category": "Noodles",
+    "style": "soup",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Yellow noodles",
+      "Dried prawn chili broth",
+      "Egg (poached in broth)",
+      "Beef slices",
+      "Shrimps",
+      "Mustard greens (Sawi)"
+    ],
+    "description": "A famous Johor noodle dish in a thick, spicy red soup cooked with dried prawns, beef slices, greens, and finished with a soft poached egg.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/mee_bandung_muar.jpg"
+  },
+  {
+    "id": "food-025",
+    "name": "Laksa Sarawak",
+    "cuisine": "East Malaysian",
+    "category": "Noodles",
+    "style": "soup",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Rice vermicelli",
+      "Sarawak laksa spiced paste",
+      "Coconut milk",
+      "Fresh prawns",
+      "Shredded chicken",
+      "Omelet strips",
+      "Coriander"
+    ],
+    "description": "A complex, herbal and spicy noodle soup made with Sarawak laksa paste and coconut milk, topped with shredded chicken, prawns, and coriander.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/laksa_sarawak.jpg"
+  },
+  {
+    "id": "food-026",
+    "name": "Kolo Mee",
+    "cuisine": "East Malaysian",
+    "category": "Noodles",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": false,
+    "ingredients": [
+      "Curly egg noodles",
+      "Lard or shallot oil",
+      "Minced pork",
+      "Red barbecue pork (Char Siu)",
+      "Fried shallots",
+      "Spring onions"
+    ],
+    "description": "A signature Sarawakian street food featuring springy, dry curly noodles tossed in fragrant lard/oil, topped with seasoned minced pork and char siu.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/kolo_mee.jpg"
+  },
+  {
+    "id": "food-027",
+    "name": "Tuaran Mee",
+    "cuisine": "East Malaysian",
+    "category": "Noodles",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": false,
+    "ingredients": [
+      "Crispy golden egg noodles",
+      "Pork slices & Char Siu",
+      "Choy Sum greens",
+      "Beaten egg",
+      "Lard"
+    ],
+    "description": "A Sabahan specialty consisting of crispy, handmade yellow egg noodles stir-fried with egg, pork slices, local vegetables, and lard.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/tuaran_mee.jpg"
+  },
+  {
+    "id": "food-028",
+    "name": "Maggi Goreng",
+    "cuisine": "Indian Muslim",
+    "category": "Noodles",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Instant ramen noodles",
+      "Mamak spice mix",
+      "Fried tofu",
+      "Egg",
+      "Cabbage",
+      "Soy sauce"
+    ],
+    "description": "Stir-fried instant noodles cooked Mamak-style with spices, egg, tofu, and cabbage—a late-night favorite across Malaysian coffee shops.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/maggi_goreng.jpg"
+  },
+  {
+    "id": "food-029",
+    "name": "Chee Cheong Fun (Penang Style)",
+    "cuisine": "Chinese",
+    "category": "Noodles",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Steamed rice noodle rolls",
+      "Sweet shrimp paste (Hae Ko)",
+      "Chili sauce",
+      "Sesame seeds",
+      "Fried shallot oil"
+    ],
+    "description": "Steamed flat rice noodle rolls served Penang-style: slathered in a dark, thick, sweet shrimp paste sauce and sprinkled with sesame.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/chee_cheong_fun.jpg"
+  },
+  {
+    "id": "food-030",
+    "name": "Chee Cheong Fun (KL Style)",
+    "cuisine": "Chinese",
+    "category": "Noodles",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Steamed rice noodle rolls",
+      "Sweet brown bean sauce",
+      "Red chili paste",
+      "Stuffed bean curd sheets (Fuzhuk)",
+      "Fried fish balls"
+    ],
+    "description": "Steamed rice noodle rolls served with sweet brown sauce, red chili, and a customizable selection of stuffed fish cakes and bean curd sheets.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/kl_chee_cheong_fun.jpg"
+  },
+  {
+    "id": "food-031",
+    "name": "Bak Kut Teh (Herbal)",
+    "cuisine": "Chinese",
+    "category": "Soup",
+    "style": "soup",
+    "flavor": "non-spicy",
+    "halal": false,
+    "ingredients": [
+      "Pork ribs & belly",
+      "Herbal broth (dang gui, cinnamon, star anise)",
+      "Garlic cloves",
+      "Tofu puffs",
+      "Button mushrooms"
+    ],
+    "description": "A fragrant, dark herbal soup simmered for hours with pork ribs, garlic, and Chinese medicinal herbs, served with white rice and fried dough.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/bak kut teh.jpg"
+  },
+  {
+    "id": "food-032",
+    "name": "Sup Tulang",
+    "cuisine": "Malay",
+    "category": "Soup",
+    "style": "soup",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Beef or mutton marrow bones",
+      "Aromatic spices (ginger, lemongrass, coriander)",
+      "Fried shallots",
+      "Celery leaves",
+      "Lime"
+    ],
+    "description": "A rich, heavily-spiced and hearty bone soup cooked with mutton or beef marrow bones, packed with warming spices.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/sup_tulang.jpg"
+  },
+  {
+    "id": "food-033",
+    "name": "Koay Teow Soup",
+    "cuisine": "Chinese",
+    "category": "Noodles",
+    "style": "soup",
+    "flavor": "non-spicy",
+    "halal": false,
+    "ingredients": [
+      "Flat rice noodles",
+      "Clear chicken or pork bone broth",
+      "Pork or fish balls",
+      "Shredded chicken meat",
+      "Fried garlic oil"
+    ],
+    "description": "A comforting, clear noodle soup featuring smooth flat rice noodles in poultry broth, topped with minced meat, fishballs, and garlic oil.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/koay_teow_soup.jpg"
+  },
+  {
+    "id": "food-034",
+    "name": "Soto Ayam",
+    "cuisine": "Malay",
+    "category": "Soup",
+    "style": "soup",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Chicken broth (turmeric & ginger)",
+      "Shredded chicken",
+      "Rice cakes (Ketupat)",
+      "Bean sprouts",
+      "Spiced potato patty (Begedil)",
+      "Sambal Kicap"
+    ],
+    "description": "A vibrant yellow, spiced chicken soup served with compressed rice cubes, potato patties, and drizzled with a sweet and fiery dark soy sambal.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/soto_ayam.jpg"
+  },
+  {
+    "id": "food-035",
+    "name": "Yong Tau Foo",
+    "cuisine": "Chinese",
+    "category": "Soup",
+    "style": "soup",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Tofu & bitter gourd stuffed with fish paste",
+      "Chili & eggplant with fish paste",
+      "Clear soy broth",
+      "Sweet sauce & chili paste"
+    ],
+    "description": "A dish of Hakka origin consisting of tofu and assorted vegetables stuffed with savory fish or pork paste, boiled and served with sweet sauce.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/yong_tau_foo.jpg"
+  },
+  {
+    "id": "food-036",
+    "name": "Fish Head Noodles",
+    "cuisine": "Chinese",
+    "category": "Noodles",
+    "style": "soup",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Thick rice noodles",
+      "Fried fish head chunks",
+      "Ginger & salted mustard greens",
+      "Evaporated milk broth",
+      "Shaoxing wine"
+    ],
+    "description": "Thick rice noodles in a rich, milky fish broth flavored with ginger, salted vegetables, sour plum, and a splash of Shaoxing wine.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/fish_head_noodles.jpg"
+  },
+  {
+    "id": "food-037",
+    "name": "Lok Lok",
+    "cuisine": "Chinese",
+    "category": "Hotpot",
+    "style": "soup",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Skewered meat and seafood",
+      "Boiling broth pot",
+      "Satay peanut sauce",
+      "Sweet chili sauce",
+      "Garlic chili sauce"
+    ],
+    "description": "A fun, communal dining experience featuring various skewers of meats, fishballs, and veggies boiled in hot soup pots and dipped in sauces.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/lok_lok.jpg"
+  },
+  {
+    "id": "food-038",
+    "name": "Steamboat / Hotpot",
+    "cuisine": "Chinese",
+    "category": "Hotpot",
+    "style": "soup",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Sliced meats (chicken/beef/pork)",
+      "Seafood (prawns, squid)",
+      "Fresh leafy vegetables",
+      "Tom Yam or chicken bone broth",
+      "Assorted noodles"
+    ],
+    "description": "A steaming hot pot placed at the center of the table where diners cook raw meats, seafood, noodles, and vegetables in delicious bubbling broths.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/hotpot.jpg"
+  },
+  {
+    "id": "food-039",
+    "name": "Mala Dry Pot",
+    "cuisine": "Chinese",
+    "category": "Hotpot",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Sichuan peppercorns",
+      "Chili oil & dried chilies",
+      "Customized meats & mushrooms",
+      "Lotus root slices",
+      "Instant noodles"
+    ],
+    "description": "A fiery, tongue-numbing hotpot flavored with Sichuan peppercorns, roasted chili oil, and medicinal spices, customized to your heat tolerance.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/mala_dry.jpg"
+  },
+  {
+    "id": "food-040",
+    "name": "Roti Canai",
+    "cuisine": "Indian",
+    "category": "Snacks & Sides",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Wheat flour dough",
+      "Ghee (clarified butter)",
+      "Condensed milk (optional)",
+      "Dhal curry",
+      "Fish or chicken curry gravy"
+    ],
+    "description": "A flaky, circular flatbread made by repeatedly tossing and folding oil-brushed dough, fried on a griddle and eaten with warm curries.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/roti_canai.jpg"
+  },
+  {
+    "id": "food-041",
+    "name": "Roti Tisu",
+    "cuisine": "Indian",
+    "category": "Snacks & Sides",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Paper-thin stretched dough",
+      "Butter",
+      "Sugar",
+      "Condensed milk"
+    ],
+    "description": "An ultra-thin, crispy, and sweet version of Roti Canai shaped into a tall cone, glazed with sugar and sweet condensed milk.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/roti_tisu.jpg"
+  },
+  {
+    "id": "food-042",
+    "name": "Satay",
+    "cuisine": "Malay",
+    "category": "Snacks & Sides",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Skewered chicken or beef",
+      "Turmeric marinade",
+      "Lemongrass",
+      "Spicy sweet peanut sauce",
+      "Ketupat (rice cakes)",
+      "Cucumber & onions"
+    ],
+    "description": "Skewered meats marinated in lemongrass, turmeric, and local spices, grilled over hot charcoal and served with sweet, chunky peanut sauce.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/satay.jpg"
+  },
+  {
+    "id": "food-043",
+    "name": "Otak-Otak",
+    "cuisine": "Peranakan",
+    "category": "Snacks & Sides",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Fish paste (mackerel)",
+      "Coconut milk",
+      "Chili & kaffir lime leaves",
+      "Lemongrass & spices",
+      "Nipa/banana leaves"
+    ],
+    "description": "A grilled fish cake seasoned with coconut milk, curry paste, and lime leaves, wrapped in banana leaves for a smoky fragrance.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/otak-otak.jpg"
+  },
+  {
+    "id": "food-044",
+    "name": "Popiah (Fresh Spring Rolls)",
+    "cuisine": "Chinese",
+    "category": "Snacks & Sides",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Soft crepe skin wrapper",
+      "Stewed jicama (sengkuang)",
+      "Bean sprouts & carrots",
+      "Crushed peanuts",
+      "Sweet bean sauce & chili paste"
+    ],
+    "description": "Fresh spring rolls packed with sweet braised jicama and turnips, crispy bean sprouts, shredded egg, and peanuts wrapped in a thin wheat crepe.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/popiah.jpg"
+  },
+  {
+    "id": "food-045",
+    "name": "Karipap (Curry Puff)",
+    "cuisine": "Malay",
+    "category": "Snacks & Sides",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Shortcrust pastry shell",
+      "Spiced potato curry",
+      "Diced chicken",
+      "Hard-boiled egg piece"
+    ],
+    "description": "A crescent-shaped deep-fried pastry puff loaded with robust potato curry, chicken, and sometimes a wedge of hard-boiled egg.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/karipap.jpg"
+  },
+  {
+    "id": "food-046",
+    "name": "Murtabak",
+    "cuisine": "Indian Muslim",
+    "category": "Snacks & Sides",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Folded pan-fried flatbread",
+      "Minced chicken, beef, or mutton",
+      "Eggs & onions",
+      "Pickled vinegar onions (Bawang Merah)"
+    ],
+    "description": "A thick, savory pan-fried bread stuffed with seasoned minced meat, egg, and lots of onions, served with red pickled vinegar onions.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/murtabak.jpg"
+  },
+  {
+    "id": "food-047",
+    "name": "Loh Bak",
+    "cuisine": "Chinese",
+    "category": "Snacks & Sides",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": false,
+    "ingredients": [
+      "Minced pork",
+      "Five-spice powder",
+      "Water chestnut pieces",
+      "Bean curd skin wrapper",
+      "Sweet starch dip & chili sauce"
+    ],
+    "description": "A Hokkien specialty of seasoned minced pork wrapped in crispy bean curd skin, deep-fried and served with sweet starch sauce and chili.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/loh_bak.jpg"
+  },
+  {
+    "id": "food-048",
+    "name": "Pisang Goreng",
+    "cuisine": "Malay",
+    "category": "Snacks & Sides",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Ripe bananas (Pisang Raja)",
+      "Crispy batter coating",
+      "Oil for deep-frying"
+    ],
+    "description": "Ripe sweet bananas dipped in a light batter and deep-fried to golden-brown, yielding a crispy exterior and soft, warm sweet interior.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/pisang_goreng.jpg"
+  },
+  {
+    "id": "food-049",
+    "name": "Keropok Lekor",
+    "cuisine": "Malay",
+    "category": "Snacks & Sides",
+    "style": "dry",
+    "flavor": "spicy",
+    "halal": true,
+    "ingredients": [
+      "Fish paste (mackerel/sardin)",
+      "Sago flour",
+      "Salt",
+      "Sweet chili sauce dip"
+    ],
+    "description": "A traditional fish cracker snack from Terengganu shaped into logs, deep-fried to a chewy texture, and served hot with sweet-spicy chili sauce.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/keropok_lekor.jpg"
+  },
+  {
+    "id": "food-050",
+    "name": "Dim Sum",
+    "cuisine": "Chinese",
+    "category": "Snacks & Sides",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": false,
+    "ingredients": [
+      "Pork & shrimp dumplings (Siew Mai)",
+      "Shrimp dumplings (Har Gow)",
+      "Steamed BBQ Pork Buns (Char Siu Bao)",
+      "Egg tarts"
+    ],
+    "description": "An assortment of bite-sized steamed and fried dumplings, buns, and pastries served in bamboo baskets, traditionally enjoyed with hot tea.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/dim_sum.jpg"
+  },
+  {
+    "id": "food-051",
+    "name": "Roti Bakar & Kaya",
+    "cuisine": "Chinese",
+    "category": "Snacks & Sides",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Toasted white bread",
+      "Cold butter slices",
+      "Kaya (coconut & pandan egg jam)"
+    ],
+    "description": "Charcoal-toasted bread slathered with rich pandan coconut jam (kaya) and sandwiched with cold, creamy butter slices.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/roti_bakar&kaya.jpg"
+  },
+  {
+    "id": "food-052",
+    "name": "Soft-Boiled Eggs",
+    "cuisine": "Chinese",
+    "category": "Soup",
+    "style": "soup",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Fresh eggs",
+      "White pepper powder",
+      "Light and dark soy sauce"
+    ],
+    "description": "Two perfectly runny soft-boiled eggs served in a cup, seasoned to taste with fragrant white pepper and salty soy sauce.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/soft-boiled-egg.jpg"
+  },
+  {
+    "id": "food-053",
+    "name": "Cendol",
+    "cuisine": "Peranakan",
+    "category": "Desserts & Drinks",
+    "style": "soup",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Shaved ice",
+      "Pandan green jelly droplets",
+      "Fresh coconut milk",
+      "Gula Melaka (palm sugar syrup)",
+      "Red kidney beans"
+    ],
+    "description": "A refreshing ice-cold dessert featuring shaved ice, green rice-flour jelly, coconut milk, and a generous pour of rich palm sugar syrup.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/cendol.jpg"
+  },
+  {
+    "id": "food-054",
+    "name": "Ais Kacang (ABC)",
+    "cuisine": "Chinese",
+    "category": "Desserts & Drinks",
+    "style": "soup",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Shaved ice",
+      "Rose and sarsaparilla syrup",
+      "Evaporated milk",
+      "Grass jelly (Cincau)",
+      "Sweet corn & red kidney beans",
+      "Attap seeds"
+    ],
+    "description": "A colorful mountain of shaved ice drizzled with sweet syrups and milk, hiding a treasure trove of grass jelly, sweet corn, beans, and attap seeds.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/ice_kacang.jpg"
+  },
+  {
+    "id": "food-055",
+    "name": "Apam Balik",
+    "cuisine": "Malay",
+    "category": "Desserts & Drinks",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Pancake flour batter",
+      "Coarse ground peanuts",
+      "Sugar",
+      "Creamy sweet corn",
+      "Melted butter"
+    ],
+    "description": "A thick, fluffy turnover pancake or thin crispy crepe folded over a filling of crushed peanuts, sugar, butter, and sweet corn.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/apam_balik.jpg"
+  },
+  {
+    "id": "food-056",
+    "name": "Kuih Seri Muka",
+    "cuisine": "Peranakan",
+    "category": "Desserts & Drinks",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Glutinous rice layer (salted)",
+      "Pandan juice egg custard layer",
+      "Coconut milk"
+    ],
+    "description": "A double-layered Nyonya tea cake containing a base of steamed salted glutinous rice, topped with a sweet, fragrant green pandan egg custard.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/kuih_seri_muka.jpg"
+  },
+  {
+    "id": "food-057",
+    "name": "Kuih Dadar (Ketayap)",
+    "cuisine": "Peranakan",
+    "category": "Desserts & Drinks",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Pandan-infused green crepe",
+      "Grated coconut filling",
+      "Gula Melaka (palm sugar)"
+    ],
+    "description": "Sweet, fragrant green pandan crepes rolled up around a rich, moist filling of grated coconut cooked in dark palm sugar syrup.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/kuih_dadar.jpg"
+  },
+  {
+    "id": "food-058",
+    "name": "Teh Tarik",
+    "cuisine": "Indian Muslim",
+    "category": "Desserts & Drinks",
+    "style": "soup",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Black tea dust",
+      "Condensed milk",
+      "Evaporated milk",
+      "Boiling water"
+    ],
+    "description": "Strong, sweetened black tea pulled repeatedly between two metal mugs to create a thick, creamy texture and a frothy bubbly head.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/teh_tarik.jpg"
+  },
+  {
+    "id": "food-059",
+    "name": "Ipoh White Coffee",
+    "cuisine": "Chinese",
+    "category": "Desserts & Drinks",
+    "style": "soup",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "White coffee beans roasted in margarine",
+      "Condensed milk",
+      "Hot water"
+    ],
+    "description": "A legendary local coffee from Ipoh roasted with palm oil margarine, served hot or iced with condensed milk for a smooth, buttery finish.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/white_coffee.jpg"
+  },
+  {
+    "id": "food-060",
+    "name": "Hainanese Chicken Chop",
+    "cuisine": "Western",
+    "category": "Snacks & Sides",
+    "style": "dry",
+    "flavor": "non-spicy",
+    "halal": true,
+    "ingredients": [
+      "Boneless chicken thigh",
+      "Breadcrumbs or flour batter coating",
+      "Tomato-Worcestershire gravy",
+      "Potato wedges",
+      "Green peas & onions"
+    ],
+    "description": "Deep-fried breaded chicken chop topped with a classic savory-sweet tomato-based gravy, served with potato wedges and green peas.",
+    "imageUrl": "https://uqrfhfatilhjpejbfmvh.supabase.co/storage/v1/object/public/food-images/hainanese_chicken_chop.jpg"
+  }
+]

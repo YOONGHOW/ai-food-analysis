@@ -13,22 +13,22 @@ export default function Home() {
         <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
           The ultimate Malaysian food decider. Spin the wheel solo, or swipe with your partner to find a restaurant you both love.
         </p>
-        
+
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <Link 
-            href="/roulette" 
+          <Link
+            href="/roulette"
             className="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-orange-500 to-rose-500 text-white font-semibold text-lg hover:scale-105 transition-transform shadow-lg shadow-orange-500/30"
           >
-            🎲 Spin the Wheel
+            Spin the Wheel
           </Link>
-          <Link 
-            href="/couples-swipe" 
+          <Link
+            href="/couples-swipe"
             className="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold text-lg hover:scale-105 transition-transform shadow-lg shadow-rose-500/30"
           >
-            ❤️ Couples Swipe
+            Couples Swipe
           </Link>
-          <Link 
-            href="/restaurants" 
+          <Link
+            href="/restaurants"
             className="w-full sm:w-auto px-8 py-4 rounded-full bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-2 border-slate-200 dark:border-slate-800 font-semibold text-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >
             Browse Restaurants

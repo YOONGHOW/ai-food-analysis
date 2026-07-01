@@ -29,7 +29,7 @@ export default function Header() {
           </button>
           <Link href="/" className="flex items-center">
             <span className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-rose-500 bg-clip-text text-transparent font-extrabold tracking-tight">
-              MakanMana?
+              CariMakan?
             </span>
           </Link>
         </div>

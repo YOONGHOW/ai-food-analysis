@@ -19,10 +19,10 @@ export default function AuthPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Redirect to home if user is already logged in
+  // Redirect to dashboard if user is already logged in
   useEffect(() => {
     if (user) {
-      router.push("/");
+      router.push("/dashboard");
     }
   }, [user, router]);
 
@@ -60,7 +60,7 @@ export default function AuthPage() {
         setConfirmPassword("");
       } else {
         await signIn(email, password);
-        router.push("/");
+        router.push("/dashboard");
       }
     } catch (err: any) {
       console.error("Auth error:", err);
@@ -96,7 +96,7 @@ export default function AuthPage() {
             }}
             className={`flex-1 py-3 text-xs font-bold rounded-xl transition-all cursor-pointer ${
               !isSignUp 
-                ? "bg-white dark:bg-slate-850 text-slate-900 dark:text-white shadow-sm" 
+                ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm" 
                 : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
             }`}
           >
@@ -110,7 +110,7 @@ export default function AuthPage() {
             }}
             className={`flex-1 py-3 text-xs font-bold rounded-xl transition-all cursor-pointer ${
               isSignUp 
-                ? "bg-white dark:bg-slate-850 text-slate-900 dark:text-white shadow-sm" 
+                ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm" 
                 : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
             }`}
           >
@@ -160,7 +160,7 @@ export default function AuthPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl pl-11 pr-4 py-3.5 text-sm outline-none focus:border-orange-500 dark:focus:border-orange-500 transition-colors"
+                className="w-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 rounded-2xl pl-11 pr-4 py-3.5 text-sm outline-none focus:border-orange-500 dark:focus:border-orange-500 transition-colors"
               />
             </div>
           </div>
@@ -180,7 +180,7 @@ export default function AuthPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-50 dark:bg-slate-955 border border-slate-200 dark:border-slate-800 rounded-2xl pl-11 pr-4 py-3.5 text-sm outline-none focus:border-orange-500 dark:focus:border-orange-500 transition-colors"
+                className="w-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 rounded-2xl pl-11 pr-4 py-3.5 text-sm outline-none focus:border-orange-500 dark:focus:border-orange-500 transition-colors"
               />
             </div>
           </div>
@@ -201,7 +201,7 @@ export default function AuthPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-slate-50 dark:bg-slate-955 border border-slate-200 dark:border-slate-800 rounded-2xl pl-11 pr-4 py-3.5 text-sm outline-none focus:border-orange-500 dark:focus:border-orange-500 transition-colors"
+                  className="w-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 rounded-2xl pl-11 pr-4 py-3.5 text-sm outline-none focus:border-orange-500 dark:focus:border-orange-500 transition-colors"
                 />
               </div>
             </div>
