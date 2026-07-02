@@ -37,40 +37,65 @@ export async function GET(request: Request) {
   }
 
   // 1. Check DB Cache First (if Supabase is configured and not forced refresh)
-  // Only use cache for generic 'food' or 'restaurant' searches. Specific keywords (e.g. 'Nasi Lemak') should query Google Places directly to avoid cache pollution.
-  const isGenericSearch = !keyword || keyword.toLowerCase() === 'food' || keyword.toLowerCase() === 'restaurant';
-  if (supabase && !refresh && isGenericSearch) {
+  if (supabase && !refresh) {
+    const isGenericSearch = !keyword || keyword.toLowerCase() === 'food' || keyword.toLowerCase() === 'restaurant';
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     try {
-      const { data: cachedPlaces, error: cacheError } = await supabase
-        .from('places_cache')
-        .select('*')
-        .eq('state', state)
-        .eq('place_name', place)
-        .eq('radius', Number(radius))
-        .gt('created_at', sevenDaysAgo.toISOString());
+      if (isGenericSearch) {
+        const { data: cachedPlaces, error: cacheError } = await supabase
+          .from('places_cache')
+          .select('*')
+          .eq('state', state)
+          .eq('place_name', place)
+          .eq('radius', Number(radius))
+          .gt('created_at', sevenDaysAgo.toISOString());
 
-      // Only use cache if we have a substantial list of restaurants (e.g. >= 10) to ensure a complete browse experience
-      if (!cacheError && cachedPlaces && cachedPlaces.length >= 10) {
-        console.log(`[Cache HIT] Found ${cachedPlaces.length} places for "${place}, ${state}" in Supabase.`);
-        const formattedPlaces = cachedPlaces.map(p => ({
-          id: p.id,
-          name: p.name,
-          rating: p.rating,
-          userRatingsTotal: p.user_ratings_total,
-          priceLevel: p.price_level,
-          vicinity: p.vicinity,
-          location: { lat: p.latitude, lng: p.longitude },
-          openNow: p.open_now,
-          photoReference: p.photo_reference,
-        }));
-        return NextResponse.json({ places: formattedPlaces });
-      }
-      
-      if (cacheError) {
-        console.warn("Supabase cache query error:", cacheError.message);
+        // Only use cache if we have a substantial list of restaurants (e.g. >= 10) to ensure a complete browse experience
+        if (!cacheError && cachedPlaces && cachedPlaces.length >= 10) {
+          console.log(`[Cache HIT] Found ${cachedPlaces.length} places for "${place}, ${state}" in Supabase.`);
+          const formattedPlaces = cachedPlaces.map(p => ({
+            id: p.id,
+            name: p.name,
+            rating: p.rating,
+            userRatingsTotal: p.user_ratings_total,
+            priceLevel: p.price_level,
+            vicinity: p.vicinity,
+            location: { lat: p.latitude, lng: p.longitude },
+            openNow: p.open_now,
+            photoReference: p.photo_reference,
+          }));
+          return NextResponse.json({ places: formattedPlaces });
+        }
+        
+        if (cacheError) {
+          console.warn("Supabase cache query error:", cacheError.message);
+        }
+      } else {
+        // Specific Keyword search: Search local DB matching the keyword (case-insensitive) in user's area
+        const { data: cachedKeywordPlaces, error: cacheError } = await supabase
+          .from('places_cache')
+          .select('*')
+          .eq('state', state)
+          .eq('place_name', place)
+          .ilike('name', `%${keyword}%`);
+
+        if (!cacheError && cachedKeywordPlaces && cachedKeywordPlaces.length > 0) {
+          console.log(`[Cache HIT] Found ${cachedKeywordPlaces.length} keyword matches for "${keyword}" in "${place}, ${state}" in Supabase.`);
+          const formattedPlaces = cachedKeywordPlaces.map(p => ({
+            id: p.id,
+            name: p.name,
+            rating: p.rating,
+            userRatingsTotal: p.user_ratings_total,
+            priceLevel: p.price_level,
+            vicinity: p.vicinity,
+            location: { lat: p.latitude, lng: p.longitude },
+            openNow: p.open_now,
+            photoReference: p.photo_reference,
+          }));
+          return NextResponse.json({ places: formattedPlaces });
+        }
       }
     } catch (err) {
       console.error("Supabase error during cache retrieval:", err);

@@ -33,28 +33,28 @@ interface FoodItem {
 
 const matchesPriceTier = (place: { name: string; priceLevel?: number }, tier: string): boolean => {
   if (tier === "all") return true;
-  
+
   if (place.priceLevel !== undefined && place.priceLevel !== null) {
     if (tier === "1") return place.priceLevel <= 1;
     if (tier === "2") return place.priceLevel === 2;
     if (tier === "3") return place.priceLevel >= 3;
   }
-  
+
   const name = place.name.toLowerCase();
   let guessedLevel = 1;
-  
+
   if (
-    name.includes("fine dining") || 
-    name.includes("steakhouse") || 
+    name.includes("fine dining") ||
+    name.includes("steakhouse") ||
     name.includes("bistro") ||
     name.includes("hotel") ||
     name.includes("cuisine")
   ) {
     guessedLevel = 3;
   } else if (
-    name.includes("cafe") || 
-    name.includes("restaurant") || 
-    name.includes("kitchen") || 
+    name.includes("cafe") ||
+    name.includes("restaurant") ||
+    name.includes("kitchen") ||
     name.includes("bar") ||
     name.includes("coffee") ||
     name.includes("japanese") ||
@@ -63,20 +63,20 @@ const matchesPriceTier = (place: { name: string; priceLevel?: number }, tier: st
   ) {
     guessedLevel = 2;
   }
-  
+
   if (tier === "1") return guessedLevel === 1;
   if (tier === "2") return guessedLevel === 2;
   if (tier === "3") return guessedLevel === 3;
-  
+
   return true;
 };
 
 export default function RestaurantsPage() {
-  const { 
-    state, place, radius, priceTier, useCurrentLocation, 
-    toggleFavorite, isFavorite, toggleFavoriteFood, isFavoriteFood 
+  const {
+    state, place, radius, priceTier, useCurrentLocation,
+    toggleFavorite, isFavorite, toggleFavoriteFood, isFavoriteFood
   } = useSettings();
-  
+
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -108,8 +108,8 @@ export default function RestaurantsPage() {
     .filter(p => {
       if (!restaurantSearch) return true;
       const term = restaurantSearch.toLowerCase();
-      return p.name.toLowerCase().includes(term) || 
-             p.vicinity.toLowerCase().includes(term);
+      return p.name.toLowerCase().includes(term) ||
+        p.vicinity.toLowerCase().includes(term);
     })
     .sort((a, b) => {
       if (restaurantSort === "rating") {
@@ -136,9 +136,9 @@ export default function RestaurantsPage() {
   const paginatedPlaces = filteredPlaces.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const filteredFoods = foods.filter(f => {
-    const matchesSearch = f.name.toLowerCase().includes(foodSearch.toLowerCase()) || 
-                          f.description.toLowerCase().includes(foodSearch.toLowerCase()) ||
-                          f.ingredients.some(i => i.toLowerCase().includes(foodSearch.toLowerCase()));
+    const matchesSearch = f.name.toLowerCase().includes(foodSearch.toLowerCase()) ||
+      f.description.toLowerCase().includes(foodSearch.toLowerCase()) ||
+      f.ingredients.some(i => i.toLowerCase().includes(foodSearch.toLowerCase()));
     const matchesCuisine = selectedCuisine === "all" || f.cuisine === selectedCuisine;
     const matchesCategory = selectedCategory === "all" || f.category === selectedCategory;
     return matchesSearch && matchesCuisine && matchesCategory;
@@ -200,6 +200,7 @@ export default function RestaurantsPage() {
 
   const handleClearRestaurantFilter = () => {
     setRestaurantKeyword(null);
+    setRestaurantSearch("");
   };
 
   return (
@@ -227,7 +228,7 @@ export default function RestaurantsPage() {
         </div>
 
         {viewMode === "restaurant" && (
-          <button 
+          <button
             onClick={() => fetchPlaces(true)}
             disabled={loading}
             className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors text-sm font-medium disabled:opacity-50 cursor-pointer w-fit"
@@ -241,21 +242,19 @@ export default function RestaurantsPage() {
       <div className="flex bg-slate-100 dark:bg-slate-900/80 p-1 rounded-xl w-full sm:w-fit self-start mb-6 border border-slate-200/50 dark:border-slate-800/40">
         <button
           onClick={() => setViewMode("restaurant")}
-          className={`flex-1 sm:flex-initial px-6 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
-            viewMode === "restaurant"
+          className={`flex-1 sm:flex-initial px-6 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${viewMode === "restaurant"
               ? "bg-white dark:bg-slate-800 text-slate-800 dark:text-white shadow-sm"
               : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-          }`}
+            }`}
         >
           Restaurant Base
         </button>
         <button
           onClick={() => setViewMode("food")}
-          className={`flex-1 sm:flex-initial px-6 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
-            viewMode === "food"
+          className={`flex-1 sm:flex-initial px-6 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${viewMode === "food"
               ? "bg-white dark:bg-slate-800 text-slate-800 dark:text-white shadow-sm"
               : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-          }`}
+            }`}
         >
           Food Base
         </button>
@@ -265,20 +264,34 @@ export default function RestaurantsPage() {
         <div className="flex-1 flex flex-col">
           {/* Search and Sort controls */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-              <input
-                type="text"
-                placeholder="Search restaurants by name or area..."
-                value={restaurantSearch}
-                onChange={(e) => setRestaurantSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-              />
-            </div>
-            
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setRestaurantKeyword(restaurantSearch.trim() || null);
+              }}
+              className="flex-1 flex gap-2"
+            >
+              <div className="relative flex-1">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <input
+                  type="text"
+                  placeholder="Search restaurants by name, cuisine, or keyword..."
+                  value={restaurantSearch}
+                  onChange={(e) => setRestaurantSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl text-sm transition-colors cursor-pointer shadow-md shadow-orange-500/10"
+              >
+                Search
+              </button>
+            </form>
+
             <div className="relative flex items-center gap-2 z-20">
               <span className="text-xs font-semibold text-slate-450 dark:text-slate-500 uppercase tracking-wider">Sort by:</span>
-              
+
               <div className="relative">
                 <button
                   type="button"
@@ -296,11 +309,11 @@ export default function RestaurantsPage() {
                 {isSortOpen && (
                   <>
                     {/* Click backdrop to dismiss */}
-                    <div 
-                      className="fixed inset-0 z-10" 
+                    <div
+                      className="fixed inset-0 z-10"
                       onClick={() => setIsSortOpen(false)}
                     />
-                    
+
                     {/* Dropdown Options List */}
                     <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-20 overflow-hidden py-1.5 animate-in fade-in slide-in-from-top-2 duration-200">
                       {[
@@ -315,11 +328,10 @@ export default function RestaurantsPage() {
                             setRestaurantSort(opt.value as any);
                             setIsSortOpen(false);
                           }}
-                          className={`w-full text-left px-4 py-2.5 text-sm transition-colors cursor-pointer block ${
-                            restaurantSort === opt.value
+                          className={`w-full text-left px-4 py-2.5 text-sm transition-colors cursor-pointer block ${restaurantSort === opt.value
                               ? "bg-orange-50 dark:bg-orange-950/20 text-orange-600 dark:text-orange-400 font-bold"
                               : "hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300"
-                          }`}
+                            }`}
                         >
                           {opt.label}
                         </button>
@@ -336,7 +348,7 @@ export default function RestaurantsPage() {
               <span className="text-orange-800 dark:text-orange-355">
                 Filtering for eateries serving: <span className="font-bold">"{restaurantKeyword}"</span>
               </span>
-              <button 
+              <button
                 onClick={handleClearRestaurantFilter}
                 className="text-xs font-bold text-orange-600 dark:text-orange-400 hover:underline cursor-pointer"
               >
@@ -360,131 +372,129 @@ export default function RestaurantsPage() {
           ) : filteredPlaces.length === 0 ? (
             <div className="flex flex-col items-center justify-center flex-1 py-16 text-center">
               <p className="text-slate-500 mb-2">No restaurants found matching your criteria.</p>
-              <p className="text-sm text-slate-400">Try adjusting your search query, sorting options, or budget tier.</p>
+              <p className="text-sm text-slate-400">Try to click the search bar and try again</p>
             </div>
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {paginatedPlaces.map((place) => (
-                <div 
-                  key={place.id}
-                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col"
-                >
-                  <div className="relative aspect-[16/10] w-full bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center">
-                    {place.photoReference ? (
-                      <img 
-                        src={`/api/places/photo?ref=${place.photoReference}`} 
-                        alt={place.name}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-orange-400/20 to-rose-400/20 flex flex-col items-center justify-center text-orange-500/80 p-4">
-                        <MapPin size={40} className="mb-2" />
-                        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">No Image Available</span>
-                      </div>
-                    )}
-                    
-                    {place.openNow !== undefined && (
-                      <span className={`absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm backdrop-blur-sm z-10 ${
-                        place.openNow 
-                          ? "bg-green-50/90 text-green-700 dark:bg-green-950/80 dark:text-green-400" 
-                          : "bg-rose-50/90 text-rose-700 dark:bg-rose-950/80 dark:text-rose-400"
-                      }`}>
-                        {place.openNow ? "OPEN NOW" : "CLOSED"}
-                      </span>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavorite(place);
-                      }}
-                      className="absolute top-3 right-3 p-2 bg-white/95 dark:bg-slate-900/95 hover:bg-white dark:hover:bg-slate-950 text-slate-400 hover:text-rose-500 rounded-full shadow-md backdrop-blur-sm transition-transform hover:scale-110 cursor-pointer z-10"
-                      aria-label={isFavorite(place.id) ? "Remove from favorites" : "Add to favorites"}
-                    >
-                      <Heart size={16} className={isFavorite(place.id) ? "fill-rose-500 text-rose-500" : ""} />
-                    </button>
-                  </div>
-
-                  <div className="p-5 flex-1 flex flex-col">
-                    <h3 className="font-bold text-lg leading-tight mb-2 line-clamp-1">{place.name}</h3>
-                    
-                    <div className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400 mb-3">
-                      <div className="flex items-center gap-1">
-                        <Star size={15} className="text-yellow-500 fill-yellow-500" />
-                        <span className="font-semibold text-slate-700 dark:text-slate-300">{place.rating || "N/A"}</span>
-                        <span className="text-xs text-slate-400">({place.userRatingsTotal || 0})</span>
-                      </div>
-                      {place.priceLevel !== undefined && (
-                        <span className="text-green-600 font-semibold">{'$'.repeat(place.priceLevel)}</span>
-                      )}
-                    </div>
-
-                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-5 flex-1">
-                      {place.vicinity}
-                    </p>
-
-                    <div className="flex gap-2 w-full mt-auto">
-                      <button 
-                        onClick={() => setSelectedPlaceId(place.id)}
-                        className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-                      >
-                        <BookOpen size={14} />
-                        Menu
-                      </button>
-                      <a 
-                        href={`https://www.google.com/maps/search/?api=1&query=${place.location.lat},${place.location.lng}&query_place_id=${place.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 py-2.5 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-                      >
-                        <Navigation size={14} />
-                        Map
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            {/* Pagination Controls */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-10">
-                <button
-                  type="button"
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="px-3.5 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                >
-                  Previous
-                </button>
-                {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((pageNum) => (
-                  <button
-                    key={pageNum}
-                    type="button"
-                    onClick={() => setCurrentPage(pageNum)}
-                    className={`w-9 h-9 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                      currentPage === pageNum
-                        ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
-                        : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
-                    }`}
+                {paginatedPlaces.map((place) => (
+                  <div
+                    key={place.id}
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col"
                   >
-                    {pageNum}
-                  </button>
+                    <div className="relative aspect-[16/10] w-full bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center">
+                      {place.photoReference ? (
+                        <img
+                          src={`/api/places/photo?ref=${place.photoReference}`}
+                          alt={place.name}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-orange-400/20 to-rose-400/20 flex flex-col items-center justify-center text-orange-500/80 p-4">
+                          <MapPin size={40} className="mb-2" />
+                          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">No Image Available</span>
+                        </div>
+                      )}
+
+                      {place.openNow !== undefined && (
+                        <span className={`absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm backdrop-blur-sm z-10 ${place.openNow
+                            ? "bg-green-50/90 text-green-700 dark:bg-green-950/80 dark:text-green-400"
+                            : "bg-rose-50/90 text-rose-700 dark:bg-rose-950/80 dark:text-rose-400"
+                          }`}>
+                          {place.openNow ? "OPEN NOW" : "CLOSED"}
+                        </span>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(place);
+                        }}
+                        className="absolute top-3 right-3 p-2 bg-white/95 dark:bg-slate-900/95 hover:bg-white dark:hover:bg-slate-950 text-slate-400 hover:text-rose-500 rounded-full shadow-md backdrop-blur-sm transition-transform hover:scale-110 cursor-pointer z-10"
+                        aria-label={isFavorite(place.id) ? "Remove from favorites" : "Add to favorites"}
+                      >
+                        <Heart size={16} className={isFavorite(place.id) ? "fill-rose-500 text-rose-500" : ""} />
+                      </button>
+                    </div>
+
+                    <div className="p-5 flex-1 flex flex-col">
+                      <h3 className="font-bold text-lg leading-tight mb-2 line-clamp-1">{place.name}</h3>
+
+                      <div className="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400 mb-3">
+                        <div className="flex items-center gap-1">
+                          <Star size={15} className="text-yellow-500 fill-yellow-500" />
+                          <span className="font-semibold text-slate-700 dark:text-slate-300">{place.rating || "N/A"}</span>
+                          <span className="text-xs text-slate-400">({place.userRatingsTotal || 0})</span>
+                        </div>
+                        {place.priceLevel !== undefined && (
+                          <span className="text-green-600 font-semibold">{'$'.repeat(place.priceLevel)}</span>
+                        )}
+                      </div>
+
+                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-5 flex-1">
+                        {place.vicinity}
+                      </p>
+
+                      <div className="flex gap-2 w-full mt-auto">
+                        <button
+                          onClick={() => setSelectedPlaceId(place.id)}
+                          className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                        >
+                          <BookOpen size={14} />
+                          Menu
+                        </button>
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${place.location.lat},${place.location.lng}&query_place_id=${place.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 py-2.5 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                        >
+                          <Navigation size={14} />
+                          Map
+                        </a>
+                      </div>
+                    </div>
+                  </div>
                 ))}
-                <button
-                  type="button"
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages}
-                  className="px-3.5 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                >
-                  Next
-                </button>
               </div>
-            )}
-          </>)}
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-10">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="px-3.5 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  >
+                    Previous
+                  </button>
+                  {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      type="button"
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`w-9 h-9 rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPage === pageNum
+                          ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
+                          : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                        }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="px-3.5 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>)}
         </div>
       )}
 
@@ -501,7 +511,7 @@ export default function RestaurantsPage() {
                 className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
-            
+
             <select
               value={selectedCuisine}
               onChange={(e) => setSelectedCuisine(e.target.value)}
@@ -516,7 +526,7 @@ export default function RestaurantsPage() {
               <option value="East Malaysian">East Malaysian</option>
               <option value="Western">Western</option>
             </select>
-            
+
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
@@ -541,7 +551,7 @@ export default function RestaurantsPage() {
               {filteredFoods.map((food) => {
                 const isLiked = isFavoriteFood(food.id);
                 return (
-                  <div 
+                  <div
                     key={food.id}
                     onClick={() => setSelectedFood(food)}
                     className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col cursor-pointer"
@@ -553,15 +563,15 @@ export default function RestaurantsPage() {
                           <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Connection Error</span>
                         </div>
                       ) : (
-                        <img 
-                          src={food.imageUrl} 
+                        <img
+                          src={food.imageUrl}
                           alt={food.name}
                           className="w-full h-full object-cover"
                           loading="lazy"
                           onError={() => setFoodImageErrors(prev => ({ ...prev, [food.id]: true }))}
                         />
                       )}
-                      
+
                       {food.halal && (
                         <span className="absolute top-3 left-3 text-[10px] font-bold px-2 py-0.5 bg-emerald-500/90 text-white rounded-md shadow-sm">
                           HALAL
@@ -588,13 +598,13 @@ export default function RestaurantsPage() {
                     <div className="p-5 flex-1 flex flex-col">
                       <h3 className="font-bold text-lg leading-tight mb-2 line-clamp-1">{food.name}</h3>
                       <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">{food.category}</p>
-                      
+
                       <p className="text-xs text-slate-550 dark:text-slate-450 line-clamp-2 mb-5 flex-1 leading-relaxed">
                         {food.description}
                       </p>
 
                       <div className="flex gap-2 w-full mt-auto">
-                        <button 
+                        <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedFood(food);
@@ -605,7 +615,7 @@ export default function RestaurantsPage() {
                           <BookOpen size={14} />
                           Details
                         </button>
-                        <button 
+                        <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedFood(food);
@@ -626,12 +636,12 @@ export default function RestaurantsPage() {
         </div>
       )}
 
-      <RestaurantDetailsModal 
-        placeId={selectedPlaceId} 
-        onClose={() => setSelectedPlaceId(null)} 
+      <RestaurantDetailsModal
+        placeId={selectedPlaceId}
+        onClose={() => setSelectedPlaceId(null)}
       />
 
-      <FoodDetailsModal 
+      <FoodDetailsModal
         food={selectedFood}
         onClose={() => setSelectedFood(null)}
         autoSearch={autoSearchFood}
