@@ -12,12 +12,16 @@ import { supabaseClient } from "@/lib/supabaseClient";
 interface Place {
   id: string;
   name: string;
-  rating: number;
-  userRatingsTotal: number;
-  priceLevel: number;
-  vicinity: string;
-  location: { lat: number; lng: number };
+  rating?: number;
+  userRatingsTotal?: number;
+  priceLevel?: number;
+  vicinity?: string;
+  location?: { lat: number; lng: number };
   photoReference?: string;
+  imageUrl?: string;
+  cuisine?: string;
+  category?: string;
+  description?: string;
 }
 
 type Mode = "setup" | "online-lobby" | "online-game" | "local-p1" | "local-handoff" | "local-p2" | "match" | "no-match";
@@ -73,7 +77,7 @@ function SwipeCard({
   total: number;
   disabled?: boolean;
 }) {
-  const { toggleFavorite, isFavorite } = useSettings();
+  const { toggleFavorite, isFavorite, toggleFavoriteFood, isFavoriteFood } = useSettings();
   const [swipeDir, setSwipeDir] = useState<"left" | "right" | null>(null);
   const [startX, setStartX] = useState(0);
   const [dragX, setDragX] = useState(0);
@@ -112,6 +116,19 @@ function SwipeCard({
   const rotation = dragX * 0.08;
   const opacity = Math.max(0, 1 - Math.abs(dragX) / 300);
 
+  // Check if this is a food item
+  const isFood = !!place.cuisine;
+
+  const handleFavoriteToggle = () => {
+    if (isFood) {
+      toggleFavoriteFood(place.id);
+    } else {
+      toggleFavorite(place as any);
+    }
+  };
+
+  const isItemFavorite = isFood ? isFavoriteFood(place.id) : isFavorite(place.id);
+
   return (
     <div
       style={{
@@ -133,8 +150,15 @@ function SwipeCard({
     >
       <div className="absolute inset-0 bg-slate-100 dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
         {/* Image */}
-        <div className="absolute inset-0">
-          {place.photoReference ? (
+        <div className="absolute inset-0 bg-slate-950">
+          {place.imageUrl ? (
+            <img
+              src={place.imageUrl}
+              alt={place.name}
+              className="w-full h-full object-cover"
+              draggable={false}
+            />
+          ) : place.photoReference ? (
             <img
               src={`/api/places/photo?ref=${place.photoReference}`}
               alt={place.name}
@@ -143,10 +167,14 @@ function SwipeCard({
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-orange-300/30 to-rose-400/30 flex items-center justify-center">
-              <MapPin size={80} className="text-orange-400/60" />
+              {isFood ? (
+                <Sparkles size={80} className="text-orange-400/60 animate-pulse" />
+              ) : (
+                <MapPin size={80} className="text-orange-400/60 animate-pulse" />
+              )}
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
         </div>
 
         {/* Swipe indicators */}
@@ -167,12 +195,12 @@ function SwipeCard({
           onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => {
             e.stopPropagation();
-            toggleFavorite(place);
+            handleFavoriteToggle();
           }}
           className="absolute top-4 left-4 p-2.5 bg-black/45 hover:bg-black/60 text-rose-500 rounded-full backdrop-blur-sm shadow-md transition-transform active:scale-95 hover:scale-105 z-20 cursor-pointer"
-          aria-label={isFavorite(place.id) ? "Remove from favorites" : "Add to favorites"}
+          aria-label={isItemFavorite ? "Remove from favorites" : "Add to favorites"}
         >
-          <Heart size={16} className={isFavorite(place.id) ? "fill-rose-500 text-rose-500" : "text-white"} />
+          <Heart size={16} className={isItemFavorite ? "fill-rose-500 text-rose-500" : "text-white"} />
         </button>
 
         {/* Counter badge */}
@@ -184,18 +212,31 @@ function SwipeCard({
         <div className="absolute bottom-0 left-0 right-0 p-5 z-10 text-white">
           <h2 className="text-2xl font-extrabold leading-tight drop-shadow-md mb-1">{place.name}</h2>
           <div className="flex items-center gap-3 text-sm font-semibold mb-2">
-            {place.rating ? (
-              <div className="flex items-center gap-1">
-                <Star size={14} className="text-yellow-400 fill-yellow-400" />
-                <span>{place.rating}</span>
-                <span className="text-slate-300 text-xs">({place.userRatingsTotal || 0})</span>
-              </div>
-            ) : null}
-            {place.priceLevel ? (
-              <span className="text-green-400">{"$".repeat(place.priceLevel)}</span>
-            ) : null}
+            {isFood ? (
+              <>
+                <span className="px-2 py-0.5 bg-orange-500/80 text-white rounded text-[10px] uppercase font-bold tracking-wider">
+                  {place.cuisine}
+                </span>
+                <span className="text-slate-300 text-xs">{place.category}</span>
+              </>
+            ) : (
+              <>
+                {place.rating ? (
+                  <div className="flex items-center gap-1">
+                    <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                    <span>{place.rating}</span>
+                    <span className="text-slate-300 text-xs">({place.userRatingsTotal || 0})</span>
+                  </div>
+                ) : null}
+                {place.priceLevel ? (
+                  <span className="text-green-400">{"$".repeat(place.priceLevel)}</span>
+                ) : null}
+              </>
+            )}
           </div>
-          <p className="text-xs text-slate-300 line-clamp-2">{place.vicinity}</p>
+          <p className="text-xs text-slate-300 line-clamp-2">
+            {isFood ? place.description : place.vicinity}
+          </p>
         </div>
       </div>
     </div>
@@ -203,9 +244,10 @@ function SwipeCard({
 }
 
 export default function CouplesSwipePage() {
-  const { state, place, radius, useCurrentLocation, favorites, toggleFavorite, isFavorite } = useSettings();
+  const { state, place, radius, useCurrentLocation, favorites, toggleFavorite, isFavorite, favoriteFoods, toggleFavoriteFood, isFavoriteFood } = useSettings();
 
   const [mode, setMode] = useState<Mode>("setup");
+  const [swipeTarget, setSwipeTarget] = useState<"restaurants" | "foods">("restaurants");
   const [p1Name, setP1Name] = useState("You");
   const [p2Name, setP2Name] = useState("Partner");
   const [places, setPlaces] = useState<Place[]>([]);
@@ -239,30 +281,56 @@ export default function CouplesSwipePage() {
     setLoading(true);
     setError(null);
     try {
-      if (useFavoritesOnly) {
-        const localFavorites = favorites.filter(p =>
-          p.state?.toLowerCase() === state.toLowerCase() &&
-          p.placeName?.toLowerCase() === place.toLowerCase()
-        );
-        if (localFavorites.length === 0) {
-          throw new Error(`No favorite restaurants saved in ${place}, ${state} yet! Add some from the Browse page first.`);
+      if (swipeTarget === "foods") {
+        const res = await fetch("/data/malaysian_foods.json");
+        if (!res.ok) throw new Error("Failed to load food database");
+        const foodsData = await res.json();
+
+        let filteredFoods = foodsData;
+        if (useFavoritesOnly) {
+          filteredFoods = foodsData.filter((f: any) => favoriteFoods.includes(f.id));
+          if (filteredFoods.length === 0) {
+            throw new Error("No favorite foods saved yet! Add some favorites in the dashboard first.");
+          }
         }
-        const shuffled = [...localFavorites].sort(() => 0.5 - Math.random());
-        setPlaces(shuffled.slice(0, 12));
+
+        const shuffled = [...filteredFoods].sort(() => 0.5 - Math.random());
+        const mappedFoods: Place[] = shuffled.slice(0, 12).map((food: any) => ({
+          id: food.id,
+          name: food.name,
+          imageUrl: food.imageUrl,
+          cuisine: food.cuisine,
+          category: food.category,
+          description: food.description,
+        }));
+        setPlaces(mappedFoods);
       } else {
-        const queryRadius = useCurrentLocation ? radius : 3000;
-        const res = await fetch(`/api/places?state=${encodeURIComponent(state)}&place=${encodeURIComponent(place)}&radius=${queryRadius}`);
-        const data = await res.json();
-        if (data.error) throw new Error(data.error);
-        if (data.places) {
-          const shuffled = [...data.places].sort(() => 0.5 - Math.random());
+        if (useFavoritesOnly) {
+          const localFavorites = favorites.filter(p =>
+            p.state?.toLowerCase() === state.toLowerCase() &&
+            p.placeName?.toLowerCase() === place.toLowerCase()
+          );
+          if (localFavorites.length === 0) {
+            throw new Error(`No favorite restaurants saved in ${place}, ${state} yet! Add some from the Browse page first.`);
+          }
+          const shuffled = [...localFavorites].sort(() => 0.5 - Math.random());
           setPlaces(shuffled.slice(0, 12));
+        } else {
+          const queryRadius = useCurrentLocation ? radius : 3000;
+          const res = await fetch(`/api/places?state=${encodeURIComponent(state)}&place=${encodeURIComponent(place)}&radius=${queryRadius}`);
+          const data = await res.json();
+          if (data.error) throw new Error(data.error);
+          if (data.places) {
+            const shuffled = [...data.places].sort(() => 0.5 - Math.random());
+            setPlaces(shuffled.slice(0, 12));
+          }
         }
       }
     } catch (e: any) {
       console.error(e);
-      setError(e.message || "Failed to fetch restaurants.");
+      setError(e.message || `Failed to fetch ${swipeTarget}.`);
       setPlaces([]);
+      setMode("setup");
     } finally {
       setLoading(false);
     }
@@ -353,7 +421,12 @@ export default function CouplesSwipePage() {
         }));
       })
       .on("broadcast", { event: "places" }, ({ payload }: any) => {
-        if (!host) setPlaces(payload.places);
+        if (!host) {
+          setPlaces(payload.places);
+          if (payload.swipeTarget) {
+            setSwipeTarget(payload.swipeTarget);
+          }
+        }
       })
       .subscribe(async (status: string) => {
         if (status === "SUBSCRIBED") {
@@ -372,10 +445,10 @@ export default function CouplesSwipePage() {
       channelRef.current.send({
         type: "broadcast",
         event: "places",
-        payload: { places },
+        payload: { places, swipeTarget },
       });
     }
-  }, [partnerConnected, places, isHost]);
+  }, [partnerConnected, places, isHost, swipeTarget]);
 
   const handleOnlineSwipe = (liked: boolean) => {
     const current = places[onlineIndex];
@@ -509,6 +582,9 @@ export default function CouplesSwipePage() {
   // ── RENDER ──────────────────────────────────────────────────────────────────
 
   if (mode === "match" && matchedPlace) {
+    const isFoodMatch = !!matchedPlace.cuisine;
+    const isItemFavorite = isFoodMatch ? isFavoriteFood(matchedPlace.id) : isFavorite(matchedPlace.id);
+
     return (
       <>
         <Confetti />
@@ -521,15 +597,17 @@ export default function CouplesSwipePage() {
               It's a Match!
             </h2>
             <p className="text-slate-500 dark:text-slate-400 mb-8 text-sm">
-              {p1Name} and {p2Name} both want this tonight!
+              {p1Name} and {p2Name} both want this!
             </p>
 
             <div className="bg-white dark:bg-slate-900 rounded-3xl border-2 border-orange-400 shadow-xl shadow-orange-500/20 overflow-hidden mb-6">
-              {matchedPlace.photoReference ? (
+              {matchedPlace.imageUrl ? (
+                <img src={matchedPlace.imageUrl} alt={matchedPlace.name} className="w-full h-48 object-cover" />
+              ) : matchedPlace.photoReference ? (
                 <img src={`/api/places/photo?ref=${matchedPlace.photoReference}`} alt={matchedPlace.name} className="w-full h-48 object-cover" />
               ) : (
                 <div className="w-full h-48 bg-gradient-to-br from-orange-300/30 to-rose-300/30 flex items-center justify-center">
-                  <MapPin size={48} className="text-orange-400" />
+                  {isFoodMatch ? <Sparkles size={48} className="text-orange-400" /> : <MapPin size={48} className="text-orange-400" />}
                 </div>
               )}
               <div className="p-5 text-left">
@@ -537,41 +615,61 @@ export default function CouplesSwipePage() {
                   <h3 className="text-xl font-extrabold line-clamp-1 flex-1">{matchedPlace.name}</h3>
                   <button
                     type="button"
-                    onClick={() => toggleFavorite(matchedPlace)}
+                    onClick={() => {
+                      if (isFoodMatch) {
+                        toggleFavoriteFood(matchedPlace.id);
+                      } else {
+                        toggleFavorite(matchedPlace as any);
+                      }
+                    }}
                     className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-rose-500 transition-colors cursor-pointer flex-shrink-0"
-                    aria-label={isFavorite(matchedPlace.id) ? "Remove from favorites" : "Add to favorites"}
+                    aria-label={isItemFavorite ? "Remove from favorites" : "Add to favorites"}
                   >
-                    <Heart size={18} className={isFavorite(matchedPlace.id) ? "fill-rose-500 text-rose-500 animate-in zoom-in-50 duration-200" : "transition-transform active:scale-90"} />
+                    <Heart size={18} className={isItemFavorite ? "fill-rose-500 text-rose-500 animate-in zoom-in-50 duration-200" : "transition-transform active:scale-90"} />
                   </button>
                 </div>
                 <div className="flex items-center gap-3 text-sm mb-2">
-                  {matchedPlace.rating ? (
-                    <div className="flex items-center gap-1 text-slate-500">
-                      <Star size={14} className="text-yellow-500 fill-yellow-500" />
-                      <span>{matchedPlace.rating}</span>
-                      <span className="text-xs">({matchedPlace.userRatingsTotal})</span>
-                    </div>
-                  ) : null}
-                  {matchedPlace.priceLevel ? (
-                    <span className="text-green-600 font-semibold">{"$".repeat(matchedPlace.priceLevel)}</span>
-                  ) : null}
+                  {isFoodMatch ? (
+                    <>
+                      <span className="px-2 py-0.5 bg-orange-100 dark:bg-orange-950/45 text-orange-600 dark:text-orange-400 rounded text-[10px] uppercase font-bold tracking-wider">
+                        {matchedPlace.cuisine}
+                      </span>
+                      <span className="text-slate-500 text-xs">{matchedPlace.category}</span>
+                    </>
+                  ) : (
+                    <>
+                      {matchedPlace.rating ? (
+                        <div className="flex items-center gap-1 text-slate-500">
+                          <Star size={14} className="text-yellow-500 fill-yellow-500" />
+                          <span>{matchedPlace.rating}</span>
+                          <span className="text-xs">({matchedPlace.userRatingsTotal})</span>
+                        </div>
+                      ) : null}
+                      {matchedPlace.priceLevel ? (
+                        <span className="text-green-600 font-semibold">{"$".repeat(matchedPlace.priceLevel)}</span>
+                      ) : null}
+                    </>
+                  )}
                 </div>
-                <p className="text-xs text-slate-500">{matchedPlace.vicinity}</p>
+                <p className="text-xs text-slate-500">{isFoodMatch ? matchedPlace.description : matchedPlace.vicinity}</p>
               </div>
             </div>
 
             <div className="flex flex-col gap-3">
               <a
-                href={`https://www.google.com/maps/search/?api=1&query=${matchedPlace.location.lat},${matchedPlace.location.lng}&query_place_id=${matchedPlace.id}`}
+                href={isFoodMatch
+                  ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(matchedPlace.name + " restaurant near me")}`
+                  : `https://www.google.com/maps/search/?api=1&query=${matchedPlace.location?.lat},${matchedPlace.location?.lng}&query_place_id=${matchedPlace.id}`
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-4 bg-gradient-to-r from-orange-500 to-rose-500 text-white font-bold rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
               >
-                <Navigation size={18} /> Navigate There!
+                <Navigation size={18} /> {isFoodMatch ? "Find spots serving this!" : "Navigate There!"}
               </a>
               <button
                 onClick={resetAll}
-                className="w-full py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+                className="w-full py-3 bg-slate-100 dark:bg-slate-800 text-slate-650 dark:text-slate-400 font-medium rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
               >
                 Start Over
               </button>
@@ -596,7 +694,7 @@ export default function CouplesSwipePage() {
               onClick={resetAll}
               className="w-full py-3 bg-gradient-to-r from-orange-500 to-rose-500 text-white font-bold rounded-2xl hover:opacity-90 transition-opacity cursor-pointer"
             >
-              Try Again with New Restaurants
+              Try Again with New {swipeTarget === "foods" ? "Foods" : "Restaurants"}
             </button>
             <a
               href="https://www.google.com/maps/search/McDonald%27s+near+me"
@@ -751,10 +849,10 @@ export default function CouplesSwipePage() {
           <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full mb-6 overflow-hidden relative">
             <div
               className={`h-full transition-all duration-1000 ease-linear ${timeLeft > 6
-                  ? "bg-gradient-to-r from-green-500 to-emerald-400"
-                  : timeLeft > 3
-                    ? "bg-gradient-to-r from-amber-500 to-orange-400"
-                    : "bg-gradient-to-r from-red-500 to-rose-500 animate-pulse"
+                ? "bg-gradient-to-r from-green-500 to-emerald-400"
+                : timeLeft > 3
+                  ? "bg-gradient-to-r from-amber-500 to-orange-400"
+                  : "bg-gradient-to-r from-red-500 to-rose-500 animate-pulse"
                 }`}
               style={{ width: `${(timeLeft / 12) * 100}%` }}
             />
@@ -817,7 +915,9 @@ export default function CouplesSwipePage() {
     return (
       <div className="flex flex-col items-center justify-center flex-1">
         <Loader2 className="animate-spin text-orange-500 mb-4" size={36} />
-        <p className="text-slate-500 font-medium">Finding restaurants...</p>
+        <p className="text-slate-500 font-medium">
+          {swipeTarget === "foods" ? "Finding foods..." : "Finding restaurants..."}
+        </p>
       </div>
     );
   }
@@ -826,134 +926,157 @@ export default function CouplesSwipePage() {
 
   return (
     <div className="flex flex-col items-center justify-center flex-1 w-full px-4 py-8">
-      <div className="max-w-sm w-full">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-400 to-rose-400 text-white rounded-2xl mb-4 shadow-lg shadow-orange-500/30">
-            <Heart size={32} fill="currentColor" />
-          </div>
-          <h1 className="text-3xl font-extrabold mb-2">Couples Swipe</h1>
-          <p className="text-slate-500 text-sm">
-            Find a restaurant you <em>both</em> love — no more arguments!
+      <div className="max-w-md w-full space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Couples Swipe</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-xs mt-1.5 leading-relaxed">
+            Find a food dish or restaurant you <em>both</em> love — no more arguments!
           </p>
         </div>
 
-        {/* Favorites Only Mode Toggle */}
-        <div
-          onClick={() => {
-            setUseFavoritesOnly(v => !v);
-          }}
-          className={`w-full mb-5 p-3.5 rounded-2xl border-2 flex items-center justify-between cursor-pointer transition-all duration-300 ${useFavoritesOnly
-              ? "border-rose-500 bg-rose-50 dark:bg-rose-950/30"
-              : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300"
-            }`}
-        >
-          <div className="flex items-center gap-3">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${useFavoritesOnly ? "bg-rose-500 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-400"}`}>
-              <Heart size={18} className={useFavoritesOnly ? "fill-white text-white" : ""} />
-            </div>
-            <div>
-              <p className={`text-sm font-bold ${useFavoritesOnly ? "text-rose-600 dark:text-rose-400" : "text-slate-700 dark:text-slate-300"}`}>
-                Favorites Only Mode
-              </p>
-              <p className="text-xs text-slate-400">
-                Only swipe your favorited food spots
-              </p>
-            </div>
-          </div>
-          <div className={`w-12 h-6 rounded-full transition-all duration-300 flex items-center px-1 ${useFavoritesOnly ? "bg-rose-500 justify-end" : "bg-slate-200 dark:bg-slate-700 justify-start"}`}>
-            <div className="w-4 h-4 bg-white rounded-full shadow" />
-          </div>
-        </div>
-
         {error && (
-          <div className="mb-5 p-3 bg-rose-55 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 rounded-xl text-xs text-rose-500 font-semibold text-center leading-relaxed">
+          <div className="p-3 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 rounded-2xl text-xs text-rose-500 font-semibold text-center leading-relaxed">
             {error}
           </div>
         )}
 
-        {/* Names */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 mb-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Your Names</p>
-          <div className="flex gap-3">
-            <input
-              type="text"
-              value={p1Name}
-              onChange={e => setP1Name(e.target.value)}
-              placeholder="Player 1"
-              className="flex-1 w-full min-w-0 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm outline-none focus:border-orange-400 transition-colors"
-            />
-            <input
-              type="text"
-              value={p2Name}
-              onChange={e => setP2Name(e.target.value)}
-              placeholder="Player 2"
-              className="flex-1 w-full min-w-0 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm outline-none focus:border-orange-400 transition-colors"
-            />
+        {/* Card 1: Setup Options Container */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-xl space-y-4">
+          {/* Swipe Mode selection */}
+          <div className="space-y-2">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Swipe Mode</label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setSwipeTarget("restaurants")}
+                className={`py-3 px-4 rounded-xl border-2 flex items-center justify-center gap-2 transition-all cursor-pointer font-bold text-sm ${swipeTarget === "restaurants"
+                  ? "border-orange-500 bg-orange-50/50 dark:bg-orange-950/20 text-orange-600 dark:text-orange-400 shadow-sm"
+                  : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 hover:bg-slate-105 dark:hover:bg-slate-900 text-slate-500 dark:text-slate-400"
+                  }`}
+              >
+                <span className="text-base">🏪</span> Restaurants
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSwipeTarget("foods")}
+                className={`py-3 px-4 rounded-xl border-2 flex items-center justify-center gap-2 transition-all cursor-pointer font-bold text-sm ${swipeTarget === "foods"
+                  ? "border-orange-500 bg-orange-50/50 dark:bg-orange-950/20 text-orange-600 dark:text-orange-400 shadow-sm"
+                  : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 hover:bg-slate-105 dark:hover:bg-slate-900 text-slate-500 dark:text-slate-400"
+                  }`}
+              >
+                <span className="text-base">🍛</span> Dishes & Foods
+              </button>
+            </div>
+          </div>
+
+          <hr className="border-slate-100 dark:border-slate-800/60 my-1" />
+
+          {/* Names inputs */}
+          <div className="space-y-2">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Players</label>
+            <div className="grid grid-cols-2 gap-3">
+              <input
+                type="text"
+                value={p1Name}
+                onChange={e => setP1Name(e.target.value)}
+                placeholder="Player 1"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm outline-none focus:border-orange-500 transition-colors"
+              />
+              <input
+                type="text"
+                value={p2Name}
+                onChange={e => setP2Name(e.target.value)}
+                placeholder="Player 2"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm outline-none focus:border-orange-500 transition-colors"
+              />
+            </div>
+          </div>
+
+          <hr className="border-slate-100 dark:border-slate-800/60 my-1" />
+
+          {/* Favorites Mode toggle row */}
+          <div
+            onClick={() => setUseFavoritesOnly(v => !v)}
+            className="flex items-center justify-between cursor-pointer group py-1"
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${useFavoritesOnly ? "bg-rose-500 text-white" : "bg-slate-100 dark:bg-slate-950 text-slate-400 border border-slate-200 dark:border-slate-800"}`}>
+                <Heart size={16} className={useFavoritesOnly ? "fill-white text-white animate-in zoom-in-50" : ""} />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-800 dark:text-slate-100">Favorites Only Mode</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Only swipe from your favorited list</p>
+              </div>
+            </div>
+            <div className={`w-11 h-6 rounded-full transition-all duration-300 flex items-center px-0.5 cursor-pointer ${useFavoritesOnly ? "bg-rose-500 justify-end" : "bg-slate-200 dark:bg-slate-800 justify-start"}`}>
+              <div className="w-5 h-5 bg-white rounded-full shadow-sm" />
+            </div>
           </div>
         </div>
 
-        {/* Mode Selection */}
-        <div className="flex flex-col gap-3">
-          {/* Local Mode */}
-          <button
-            onClick={startLocalMode}
-            className="w-full p-5 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-2xl text-left hover:border-orange-400 transition-all group shadow-sm cursor-pointer"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-orange-50 dark:bg-orange-950/30 text-orange-500 rounded-xl flex items-center justify-center group-hover:bg-orange-100 transition-colors">
-                <Smartphone size={24} />
-              </div>
-              <div>
-                <p className="font-bold text-base">Pass-the-Phone</p>
-                <p className="text-xs text-slate-400">One phone, two people swipe in turns</p>
-              </div>
-              <ArrowRight size={18} className="ml-auto text-slate-300 group-hover:text-orange-500 transition-colors" />
-            </div>
-          </button>
+        {/* Card 2: Play Modes Selection */}
+        <div className="space-y-3">
+          <p className="text-center text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-550">Choose Game Mode</p>
 
-          {/* Online Mode */}
-          {supabaseClient ? (
-            <>
-              <button
-                onClick={createOnlineRoom}
-                className="w-full p-5 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-2xl text-left hover:border-green-400 transition-all group shadow-sm cursor-pointer"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-green-50 dark:bg-green-950/30 text-green-500 rounded-xl flex items-center justify-center group-hover:bg-green-100 transition-colors">
-                    <QrCode size={24} />
-                  </div>
-                  <div>
-                    <p className="font-bold text-base">Online Live Mode</p>
-                    <p className="text-xs text-slate-400">Two phones, swipe together in real-time</p>
-                  </div>
-                  <ArrowRight size={18} className="ml-auto text-slate-300 group-hover:text-green-500 transition-colors" />
-                </div>
-              </button>
+          <div className="space-y-3">
+            {/* Pass the phone option */}
+            <button
+              onClick={startLocalMode}
+              className="w-full p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-left hover:border-orange-500/50 transition-all flex items-center gap-4 group shadow-sm cursor-pointer"
+            >
+              <div className="w-10 h-10 bg-orange-50 dark:bg-orange-955/20 text-orange-500 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform flex-shrink-0">
+                <Smartphone size={20} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-bold text-sm text-slate-900 dark:text-white">Pass-the-Phone (Local)</p>
+                <p className="text-[10px] text-slate-400 truncate">One device, swipe in turns</p>
+              </div>
+              <ArrowRight size={16} className="text-slate-350 group-hover:translate-x-0.5 transition-transform" />
+            </button>
 
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={joinRoomInput}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setJoinRoomInput(e.target.value.toUpperCase())}
-                  placeholder="Enter room code to join..."
-                  className="flex-1 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm outline-none focus:border-green-400 transition-colors uppercase tracking-widest"
-                  maxLength={6}
-                />
+            {/* Online live option */}
+            {supabaseClient ? (
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
                 <button
-                  onClick={() => joinRoomInput && joinOnlineRoom(joinRoomInput)}
-                  disabled={!joinRoomInput}
-                  className="px-4 py-3 bg-green-500 text-white font-bold rounded-xl hover:bg-green-600 transition-colors disabled:opacity-40 cursor-pointer"
+                  onClick={createOnlineRoom}
+                  className="w-full p-3 bg-slate-50 hover:bg-slate-105 dark:bg-slate-950 dark:hover:bg-slate-900/60 border border-slate-200/50 dark:border-slate-850 rounded-xl text-left transition-all flex items-center gap-3 group cursor-pointer"
                 >
-                  Join
+                  <div className="w-8 h-8 bg-green-50 dark:bg-green-955/20 text-green-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <QrCode size={16} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold text-xs text-slate-900 dark:text-white">Host Online Live Room</p>
+                    <p className="text-[9px] text-slate-400 truncate font-semibold">Get link to invite partner</p>
+                  </div>
+                  <ArrowRight size={14} className="text-slate-350 group-hover:translate-x-0.5 transition-transform" />
                 </button>
+
+                <div className="flex items-center gap-2 pt-1">
+                  <input
+                    type="text"
+                    value={joinRoomInput}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setJoinRoomInput(e.target.value.toUpperCase())}
+                    placeholder="Enter Room Code..."
+                    className="flex-1 w-full min-w-0 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-850 rounded-xl p-3 text-xs outline-none focus:border-green-500 transition-colors uppercase tracking-widest text-center"
+                    maxLength={6}
+                  />
+                  <button
+                    onClick={() => joinRoomInput && joinOnlineRoom(joinRoomInput)}
+                    disabled={!joinRoomInput}
+                    className="px-5 py-3 bg-green-500 hover:bg-green-600 disabled:opacity-40 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
+                  >
+                    Join
+                  </button>
+                </div>
               </div>
-            </>
-          ) : (
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-3 text-sm text-slate-400">
-              <WifiOff size={18} />
-              Online mode unavailable (Supabase not configured)
-            </div>
-          )}
+            ) : (
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/55 border border-slate-200 dark:border-slate-800 flex items-center gap-3 text-xs text-slate-400">
+                <WifiOff size={16} />
+                Online mode unavailable (Supabase not configured)
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

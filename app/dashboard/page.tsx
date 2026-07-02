@@ -482,7 +482,7 @@ export default function DashboardPage() {
             </div>
           </Link>
 
-          {/* AI Food Therapist card */}
+          {/* AI Food Matcher card */}
           <Link
             href="/ai-advisor"
             className="group p-6 rounded-3xl bg-gradient-to-r from-indigo-500/10 via-indigo-500/5 to-transparent dark:from-indigo-500/10 dark:via-transparent border border-indigo-500/20 dark:border-indigo-500/10 hover:border-indigo-500/40 transition-all duration-350 shadow-sm flex items-center justify-between"
@@ -491,8 +491,8 @@ export default function DashboardPage() {
               <div className="p-3 bg-indigo-500 text-white rounded-2xl w-fit shadow-md shadow-indigo-500/20 group-hover:scale-110 transition-transform">
                 <Brain size={24} />
               </div>
-              <h4 className="text-lg font-extrabold text-slate-900 dark:text-white">AI Food Therapist</h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Can't decide? Let our AI interview you and prescribe the perfect meal based on your mood & health goal!</p>
+              <h4 className="text-lg font-extrabold text-slate-900 dark:text-white">AI Food Matcher</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Can't decide? Let our AI ask you a few questions and match the perfect dish to your mood & cravings!</p>
             </div>
             <div className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full group-hover:translate-x-1 transition-transform">
               <ArrowRight size={20} className="text-indigo-500" />

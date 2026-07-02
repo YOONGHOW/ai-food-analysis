@@ -133,8 +133,8 @@ const filterFoodsByVibe = (
 };
 
 export default function RoulettePage() {
-  const { 
-    state, place, radius, priceTier, useCurrentLocation, 
+  const {
+    state, place, radius, priceTier, useCurrentLocation,
     favorites, toggleFavorite, isFavorite,
     favoriteFoods, toggleFavoriteFood, isFavoriteFood
   } = useSettings();
@@ -193,8 +193,8 @@ export default function RoulettePage() {
     : activeFoods;
   const vetoedFoods = activeFoods.filter(f => vetoedIds.includes(f.id));
 
-  const displayPool = (isSpinning || winner) && spinPool.length > 0 
-    ? spinPool 
+  const displayPool = (isSpinning || winner) && spinPool.length > 0
+    ? spinPool
     : (viewMode === "restaurant" ? activePlaces : filteredFoods);
 
   const currentItem = displayPool[currentDisplayIndex];
@@ -356,12 +356,32 @@ export default function RoulettePage() {
   }, []);
 
   if (error) {
+    const isFavoritesError = error.includes("No favorite");
     return (
-      <div className="flex flex-col items-center justify-center flex-1 p-4 text-center">
-        <p className="text-red-550 mb-4">{error}</p>
-        <button onClick={fetchPlaces} className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg">
-          <RefreshCw size={16} /> Try Again
-        </button>
+      <div className="flex flex-col items-center justify-center flex-1 p-8 text-center max-w-md mx-auto min-h-[50vh]">
+        <div className="text-4xl mb-4">🤯</div>
+        <p className="text-slate-800 dark:text-slate-200 font-medium mb-6 leading-relaxed">{error}</p>
+
+        <div className="flex flex-col gap-3 justify-center w-full">
+          {!isFavoritesError && (
+            <button
+              onClick={fetchPlaces}
+              className="flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-orange-500 to-rose-500 text-white font-bold rounded-xl shadow-lg shadow-orange-500/25 hover:opacity-95 transition-opacity cursor-pointer text-sm w-full"
+            >
+              <RefreshCw size={16} /> Try Again
+            </button>
+          )}
+
+          <button
+            onClick={() => {
+              setError("");
+              setUseFavoritesOnly(false);
+            }}
+            className="flex items-center justify-center gap-2 px-5 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl transition-colors cursor-pointer text-sm w-full"
+          >
+            Go Back
+          </button>
+        </div>
       </div>
     );
   }
@@ -421,21 +441,19 @@ export default function RoulettePage() {
         <div className="flex bg-slate-100 dark:bg-slate-900/80 p-1 rounded-xl w-full mb-6 border border-slate-200/50 dark:border-slate-800/40">
           <button
             onClick={() => setViewMode("restaurant")}
-            className={`flex-1 px-6 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
-              viewMode === "restaurant"
-                ? "bg-white dark:bg-slate-800 text-slate-800 dark:text-white shadow-sm"
-                : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-            }`}
+            className={`flex-1 px-6 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${viewMode === "restaurant"
+              ? "bg-white dark:bg-slate-800 text-slate-800 dark:text-white shadow-sm"
+              : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+              }`}
           >
             Spin Restaurants
           </button>
           <button
             onClick={() => setViewMode("food")}
-            className={`flex-1 px-6 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
-              viewMode === "food"
-                ? "bg-white dark:bg-slate-800 text-slate-800 dark:text-white shadow-sm"
-                : "text-slate-505 hover:text-slate-800 dark:hover:text-slate-200"
-            }`}
+            className={`flex-1 px-6 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${viewMode === "food"
+              ? "bg-white dark:bg-slate-800 text-slate-800 dark:text-white shadow-sm"
+              : "text-slate-505 hover:text-slate-800 dark:hover:text-slate-200"
+              }`}
           >
             Spin Food
           </button>
@@ -508,7 +526,7 @@ export default function RoulettePage() {
           </div>
         ) : (
           <div className="w-full flex flex-col items-center">
-            
+
             {/* VIBE FUNNEL SELECTIONS */}
             {vibeStep > 0 && !isSpinning && !winner && (
               <div className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 mb-6 shadow-sm animate-in fade-in zoom-in-95 duration-200">
@@ -653,13 +671,13 @@ export default function RoulettePage() {
                           : (isFavoriteFood(currentItem.id) ? "Remove from favorites" : "Add to favorites")
                       }
                     >
-                      <Heart 
-                        size={18} 
+                      <Heart
+                        size={18}
                         className={
                           viewMode === "restaurant"
                             ? (isFavorite(currentItem.id) ? "fill-rose-500 text-rose-500" : "")
                             : (isFavoriteFood(currentItem.id) ? "fill-rose-500 text-rose-500" : "")
-                        } 
+                        }
                       />
                     </button>
                   )}
@@ -689,10 +707,10 @@ export default function RoulettePage() {
                           <span className="text-[8px] font-bold uppercase tracking-wider text-slate-400 text-slate-400/80">Connection Error</span>
                         </div>
                       ) : (
-                        <img 
-                          src={currentItem.imageUrl} 
-                          alt={currentItem.name} 
-                          className="w-full h-full object-cover" 
+                        <img
+                          src={currentItem.imageUrl}
+                          alt={currentItem.name}
+                          className="w-full h-full object-cover"
                           onError={() => setRouletteImageError(true)}
                         />
                       )}
@@ -700,7 +718,7 @@ export default function RoulettePage() {
                   )}
 
                   <h2 className="text-2xl font-bold mb-2">{currentItem.name}</h2>
-                  
+
                   {viewMode === "restaurant" && currentItem.location ? (
                     <>
                       <div className="flex items-center gap-4 text-slate-550 dark:text-slate-400 mb-2 font-normal">
@@ -878,7 +896,6 @@ export default function RoulettePage() {
                 onClick={handleSpinClick}
                 className="w-56 h-56 rounded-full bg-gradient-to-r from-orange-500 to-rose-500 hover:scale-105 active:scale-95 text-white font-black text-2xl shadow-xl shadow-orange-500/30 hover:shadow-orange-500/50 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer select-none border-8 border-white dark:border-slate-950"
               >
-                <RotateCcw size={32} />
                 <span>SPIN!</span>
               </button>
             )}
@@ -902,7 +919,7 @@ export default function RoulettePage() {
         onClose={() => setSelectedPlaceId(null)}
       />
 
-      <FoodDetailsModal 
+      <FoodDetailsModal
         food={selectedFood}
         onClose={() => setSelectedFood(null)}
       />

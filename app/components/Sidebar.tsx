@@ -541,8 +541,8 @@ export default function Sidebar() {
                 >
                   <Sparkles size={16} className="flex-shrink-0 text-indigo-500" />
                   <div>
-                    <span className="block text-sm">AI Food Therapist</span>
-                    <span className="block text-xs text-slate-400 font-normal">Diagnostic Q&A advice</span>
+                    <span className="block text-sm font-semibold">AI Food Matcher</span>
+                    <span className="block text-xs text-slate-400 font-normal">Match your mood & cravings</span>
                   </div>
                 </Link>
               </div>

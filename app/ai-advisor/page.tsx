@@ -57,11 +57,11 @@ export default function AIAdvisorPage() {
 
   // Cycling messages for the loading screen
   const loadingMessages = [
-    "Consulting the AI Food Therapist...",
+    "Consulting the AI Food Matcher...",
     "Analyzing your mood & energy levels...",
     "Scanning the Malaysian food database...",
-    "Evaluating nutritional benefits and ingredients...",
-    "Brewing the perfect culinary prescription..."
+    "Evaluating flavor profiles and ingredients...",
+    "Finding the perfect culinary match..."
   ];
 
   // Load local food catalog on mount
@@ -182,35 +182,38 @@ export default function AIAdvisorPage() {
 
       {/* STEP 0: INTRO SCREEN */}
       {step === 0 && (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/85 p-8 rounded-3xl shadow-xl flex flex-col items-center text-center space-y-6 animate-in fade-in zoom-in-95 duration-300">
+        <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/85 p-8 rounded-3xl shadow-xl flex flex-col items-center text-center space-y-6 animate-in fade-in zoom-in-95 duration-300">
           <div className="space-y-2">
             <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-indigo-600 to-violet-500 dark:from-white dark:via-indigo-400 dark:to-violet-400 bg-clip-text text-transparent">
-              AI Food Therapist
+              AI Food Matcher
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 text-sm max-w-lg">
-              Stuck in a food dilemma? Our AI therapist will diagnose your physical vibe, mental state, cravings, and health goals to prescribe the perfect local Malaysian dish!
+            <p className="text-slate-500 dark:text-slate-400 text-sm max-w-lg leading-relaxed">
+              Stuck in a food dilemma? Answer 5 quick questions about your mood, physical vibe, and cravings to find your perfect Malaysian meal match!
             </p>
           </div>
 
           {/* Dietary preference selection */}
-          <div className="w-full max-w-sm p-5 bg-slate-50 dark:bg-slate-950/45 rounded-3xl border border-slate-100 dark:border-slate-800 space-y-3">
-            <div className="text-left">
-              <p className="text-xs font-bold text-slate-700 dark:text-slate-350">Dietary Filter</p>
-              <p className="text-[10px] text-slate-400">Filter dishes based on Halal status</p>
+          <div className="w-full max-w-md p-6 bg-slate-50 dark:bg-slate-950/45 rounded-3xl border border-slate-100 dark:border-slate-800 space-y-4">
+            <div className="text-left flex items-center justify-between">
+              <div>
+                <p className="text-sm font-bold text-slate-700 dark:text-slate-350">Dietary Filter</p>
+                <p className="text-xs text-slate-400">Filter dishes based on Halal status</p>
+              </div>
+              <span className="text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 px-2.5 py-0.5 rounded-full">Option</span>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 bg-white dark:bg-slate-900 p-1 rounded-2xl border border-slate-200/50 dark:border-slate-800">
+            <div className="grid grid-cols-3 gap-2.5 bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200/50 dark:border-slate-800">
               {[
-                { value: "all", label: "🍽️ All" },
-                { value: "halal", label: "🕌 Halal" },
-                { value: "non-halal", label: "🐷 Non-Halal" }
+                { value: "all", label: "All" },
+                { value: "halal", label: "Halal" },
+                { value: "non-halal", label: "Non-Halal" }
               ].map(opt => (
                 <button
                   key={opt.value}
                   type="button"
                   onClick={() => setDietaryPreference(opt.value as any)}
-                  className={`py-2 text-[11px] font-bold rounded-xl transition-all cursor-pointer ${dietaryPreference === opt.value
-                      ? "bg-indigo-500 text-white shadow-sm"
+                  className={`py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer ${dietaryPreference === opt.value
+                      ? "bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-sm scale-102"
                       : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                     }`}
                 >
@@ -228,9 +231,9 @@ export default function AIAdvisorPage() {
 
           <button
             onClick={() => setStep(1)}
-            className="w-full max-w-xs py-3.5 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/35 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            className="w-full max-w-md py-4 bg-gradient-to-r from-indigo-500 to-violet-650 hover:from-indigo-600 hover:to-violet-750 text-white font-bold rounded-2xl shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-1.5 cursor-pointer text-sm"
           >
-            Start Consultation <ChevronRight size={16} />
+            Find My Match <ChevronRight size={16} />
           </button>
         </div>
       )}
@@ -242,7 +245,7 @@ export default function AIAdvisorPage() {
           {/* Progress bar */}
           <div className="space-y-2">
             <div className="flex justify-between items-center text-xs font-bold text-slate-400 uppercase tracking-wider">
-              <span>Therapy Session</span>
+              <span>Matching Session</span>
               <span>Step {step} of 5</span>
             </div>
             <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -441,7 +444,7 @@ export default function AIAdvisorPage() {
             </div>
           </div>
           <div className="space-y-1">
-            <h2 className="text-xl font-bold text-slate-950 dark:text-white">Formulating Prescription</h2>
+            <h2 className="text-xl font-bold text-slate-950 dark:text-white">Finding Your Match</h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 h-6 transition-all duration-300 font-semibold animate-pulse text-indigo-500 dark:text-indigo-400">
               {loadingMessages[loadingMessageIndex]}
             </p>
@@ -455,16 +458,16 @@ export default function AIAdvisorPage() {
 
           <div className="text-center space-y-1">
             <div className="inline-flex items-center gap-1 bg-indigo-100 dark:bg-indigo-950/45 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
-              <Sparkles size={12} /> Prescription Ready
+              <Sparkles size={12} /> Match Found!
             </div>
-            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">AI Food Prescription</h2>
-            <p className="text-slate-500 dark:text-slate-400 text-xs">Based on your mood, craving, and wellness checkup</p>
+            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">Your Perfect Food Match</h2>
+            <p className="text-slate-500 dark:text-slate-400 text-xs">Based on your current vibe, cravings, and wellness choice</p>
           </div>
 
           {/* AI Therapist Explanation Quote Bubble */}
           <div className="relative bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 p-6 rounded-3xl shadow-xl flex flex-col gap-3">
             <div className="absolute -top-3 left-6 px-3 py-0.5 bg-indigo-600 text-white text-[9px] font-bold uppercase rounded-md tracking-wider">
-              Therapist Advice
+              AI Advisor Advice
             </div>
             <div className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 p-1">
               {parseMarkdown(recommendation.explanation)}
@@ -527,7 +530,7 @@ export default function AIAdvisorPage() {
               onClick={handleRestart}
               className="py-3.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-2xl shadow-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer text-sm"
             >
-              <RotateCcw size={16} /> Retake Therapy
+              <RotateCcw size={16} /> Match Another Dish
             </button>
             <Link
               href="/dashboard"

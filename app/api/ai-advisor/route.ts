@@ -52,7 +52,7 @@ export async function POST(request: Request) {
 
     // 3. Build the prompt
     const prompt = `
-You are the "AI Food Therapist", an expert local Malaysian food critic, nutritionist, and wellness counselor.
+You are the "AI Food Matcher", an expert local Malaysian food critic, nutritionist, and culinary guide.
 Your task is to select and prescribe the SINGLE best food item from our menu below that matches the user's physical feeling, emotional mood, craving profile, health goals, appetite, and dietary guidelines.
 
 User Profile & State:
